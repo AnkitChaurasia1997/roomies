@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, getNewRefreshToken } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -14,20 +15,20 @@ router
         }
     ]), registerUser)
 
-// router
-//     .route("/login")
-//     .post(loginUser)
+router
+    .route("/login")
+    .post(loginUser)
 
-// //secured route
+// secured route
 
-// router
-//     .route("/logout")
-//     .post(verifyJWT, logoutUser)
+router
+    .route("/logout")
+    .post(verifyJWT, logoutUser)
 
 
-// router
-//     .route("/refreshToken")
-//     .post(getNewToken);
+router
+    .route("/refreshToken")
+    .post(getNewRefreshToken);
 
 
 export default router;
