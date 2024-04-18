@@ -12,12 +12,12 @@ cloudinary.config({
 const uploadOnCDN = async (localFile) => {
     try {
         if(!localFile) return null
-
-       const response = await cloudinary.uploader.upload(localFile, {
+        console.log("uploading...")
+        const response = await cloudinary.uploader.upload(localFile, {
             resource_type: "auto"
         })
 
-        // console.log("File uploaded succesfully", response.url);
+        console.log("File uploaded succesfully", response);
         return response
     } catch (error) {
         //removing the locally saved temp file as operation got failed.
