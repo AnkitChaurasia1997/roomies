@@ -32,32 +32,13 @@ const preferencesSchema = new mongoose.Schema({
         },
         message : "Invalid age range",
     },
-    budget : {
-        type : Number,
-        required : [true, "Budget can't be empty!"]
-    }, 
     lifestyle_preferences : [{
         type : [String],
         enum : ['Drinking', 'Smoking', 'Vegetarian', 'NonVegetarian', 'Pets', 'Cleanliness']
     }]
 })
 
-const userSchema = new mongoose.Schema({
-    username : {
-        type :String,
-        required : [true, "username can't be empty!"],
-        unique : true,
-        lowercase : true,
-        trim : true,
-        index : true,
-        lowercase : true
-    },
-    email : {
-        type : String,
-        required : [true, "email can't be empty!"],
-        unique : true,
-        trim : true,
-    },
+const membersSchema = new mongoose.Schema({
     firstName : {
         type : String,
         required : [true, "first name can't be empty!"],
@@ -67,37 +48,74 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : [true, "last name can't be empty!"]
     },
-    bio : {
-        type : String
-    },
-    age:{
+    MemberAge:{
         type: Number,
         min: [18, "Age should be greater than 18"],
         max: 90,
-        required : true
+        required : true,
+        trim : true
+    },
+    memberEmail : {
+        type : String,
+        required : [true, "email can't be empty!"],
+        unique : true,
+        trim : true,
+    },
+    gender : {
+        type : String,
+        required : [true, "gender can't be empty!"],
+        unique : true,
+        trim : true,
+    },
+})
+
+const groupSchema = new mongoose.Schema({
+    name : {
+        type :String,
+        required : [true, "Group name can't be empty!"],
+        unique : true,
+        lowercase : true,
+        trim : true,
+        index : true,
+        lowercase : true
+    },
+    email : {
+        type : String,
+        required : [true, "Email is required!"],
+        unique : true,
+        trim : true,
+    },
+    password : {
+        type : String,
+        required : [true, 'Password is required']
     },
     profile_picture : {
         type: String,
         required : [true, "Profile picture is required"],
     },
-    likes:[{
-        type : mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    password : {
-        type : String,
-        required : [true, 'Password is required']
+    bio : {
+        type : String
+    },
+    members : {
+        type : membersSchema,
+    },
+    budget : {
+        type : Number
     },
     preferences : {
         type : preferencesSchema,
     },
+    likes:[{
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "Group"
+    }],
     refreshToken : {
         type: String
     }
 }, {timestamps : true});
 
 
-userSchema.pre("save", async function(next){
+groupSchema.pre("save", async function(next){
     if(this.isModified("password")){
         this.password = await bcrypt.hash(this.password, 10);
         next();
@@ -106,11 +124,11 @@ userSchema.pre("save", async function(next){
 });
 
 //Methods Creation
-userSchema.methods.isPasswordCorrect = async function(password){
+groupSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password, this.password);
 } 
 
-userSchema.methods.generateAccessToken = function(){
+groupSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
             _id : this._id,
@@ -124,7 +142,7 @@ userSchema.methods.generateAccessToken = function(){
     )
 }
 
-userSchema.methods.generateRefreshToken = function(){
+groupSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id : this._id,
@@ -136,4 +154,4 @@ userSchema.methods.generateRefreshToken = function(){
     )
 }
 
-export const User = mongoose.model("User", userSchema);
+export const Group = mongoose.model("Group", groupSchema);

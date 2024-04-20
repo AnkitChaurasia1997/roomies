@@ -81,6 +81,60 @@ export const registerUser = async(req, res) => {
     )
 }
 
+export const getProfile = async(req, res) => {
+
+    let userId = req.params.userId;
+    if(!userId){
+        throw new ApiError(400, "userId Required")
+    }
+    const user = await User.findById(userId);
+
+    if(!user){
+        throw new ApiError(500, "Something went wrong while getting the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, user)
+    )
+
+}
+
+export const setProfile = async(req, res) => {
+
+    const userId = req.params.userId; 
+    if(!userId){
+        throw new ApiError(400, "userId Required")
+    }
+    const userDetails = req.body;
+    console.log(userDetails)
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const updatedObj = {};
+
+    for (const key in userDetails) {
+        if (Object.hasOwnProperty.call(userDetails, key)) {
+            if (user.schema.path(key)) {
+                updatedObj[key] = userDetails[key];
+            }
+        }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updatedObj, { new: true });
+
+    if(!updatedUser){
+        throw new ApiError(500, "Something went wrong while updating the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser, "User profile updated successfully")
+    )
+
+}
+
 
 export const loginUser = async(req, res) => {
 
