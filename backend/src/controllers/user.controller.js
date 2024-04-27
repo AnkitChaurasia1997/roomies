@@ -4,7 +4,7 @@ import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-
+import mongoose from "mongoose";
 
 
 
@@ -263,3 +263,47 @@ export const getNewRefreshToken = async(req, res) => {
         throw new ApiError(401, error?.message || "Invalid refresh token");
     }
 };
+
+
+
+export const swipeRight = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID=req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    const updatedUser=await User.findOneAndUpdate(
+        { _id: userId,likes:{ $ne: otherobjID } }, 
+        { $push: { likes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping right the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
+
+export const swipeLeft = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID=req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    const updatedUser=await User.findOneAndUpdate(
+        { _id: userId,dislikes:{ $ne: otherobjID } }, 
+        { $push: { dislikes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping Left the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
