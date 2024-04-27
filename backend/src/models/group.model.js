@@ -109,6 +109,10 @@ const groupSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref: "Group"
     }],
+    dislikes:[{
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "Group"
+    }],
     refreshToken : {
         type: String
     }

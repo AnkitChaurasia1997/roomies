@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken,swipeRight,swipeLeft } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -37,5 +37,13 @@ router
 router
     .route("/profile/:userId")
     .post(setProfile)
+
+router
+    .route("/swipeRight/:userId")
+    .post(swipeRight)
+
+router
+    .route("/swipeLeft/:userId")
+    .post(swipeLeft)
 
 export default router;
