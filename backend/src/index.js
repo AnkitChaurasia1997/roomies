@@ -1,5 +1,5 @@
 import connectDB from "./db/index.js";
-import { app } from "./app.js";
+import { app, server } from "./app.js";
 
 
 connectDB()
@@ -10,7 +10,7 @@ connectDB()
             throw error;
         })
 
-        app.listen(process.env.PORT || 8000, () => {
+        server.listen(process.env.PORT || 8000, () => {
             console.log("App lisening to port " + process.env.PORT);
         })
     } catch (error) {

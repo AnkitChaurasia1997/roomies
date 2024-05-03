@@ -1,0 +1,34 @@
+
+<main>
+    Welcome {{username}}
+    <button id="logout-btn"> Log-Out </button>
+    <button id="get-liked-user-btn"> Get Liked User </button>
+
+    <script>
+        
+
+        //Authorization User (take id from frontend to backend)
+
+
+        document.getElementById('get-liked-user-btn')
+                .addEventListener('click', () => {
+                    window.location.href = "/api/v1/users/getLikedUsers"
+                })
+
+
+        const logOutBtn = document.getElementById('logout-btn');
+        logOutBtn.addEventListener('click', () => {
+            fetch('/api/v1/users/logout', {
+                method : 'POST',
+                credentials : 'include',
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                window.location.href = '/'; 
+            })
+            .catch((error) => console.log(error))
+
+        })
+    </script>
+</main>

@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken,swipeRight,swipeLeft } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -45,5 +46,14 @@ router
 router
     .route("/swipeLeft/:userId")
     .post(swipeLeft)
+
+router
+    .route('/getLikedUsers')
+    .get(verifyJWT, getLikedUsers)
+
+router
+    .route('/getUserStatus/:userId')
+    .get(getUserStatus);
+
 
 export default router;
