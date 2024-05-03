@@ -3,10 +3,6 @@ import bcrypt from  "bcrypt";
 import jwt from "jsonwebtoken";
 
 const preferencesSchema = new mongoose.Schema({
-    userID : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : "User"
-    },
     looking_forBHK : {
         type : Number,
         required : [true, "Can't be empty!"]
@@ -35,7 +31,11 @@ const preferencesSchema = new mongoose.Schema({
     lifestyle_preferences : [{
         type : [String],
         enum : ['Drinking', 'Smoking', 'Vegetarian', 'NonVegetarian', 'Pets', 'Cleanliness']
-    }]
+    }],
+    looking_for_accommodation : {
+        type : Boolean,
+        required : [true, "Can't be empty"]
+    }
 })
 
 const membersSchema = new mongoose.Schema({

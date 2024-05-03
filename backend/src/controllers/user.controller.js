@@ -91,7 +91,7 @@ export const getProfile = async(req, res) => {
     if(!userId){
         throw new ApiError(400, "userId Required")
     }
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('-password');
 
     if(!user){
         throw new ApiError(500, "Something went wrong while getting the user.");
@@ -109,16 +109,129 @@ export const setProfile = async(req, res) => {
     if(!userId){
         throw new ApiError(400, "userId Required")
     }
+    
     const userDetails = req.body;
-    console.log(userDetails)
+    const {username, email, firstName, lastName, bio, age, looking_forBHK, zipcode, food_choices, profession, ages_between, budget, lifestyle_preferences, looking_for_accommodation} = userDetails;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('-password');
     if (!user) {
         throw new ApiError(404, "User not found")
     }
+        
+    
+    let updatedObj = {
+        username : username,
+        email : email,
+        firstName : firstName,
+        lastName : lastName,
+        bio : bio,
+        age : age,
+        likes : user.likes ? user.likes : [],
+        dislikes : user.dislikes ? user.dislikes : []
+    }
 
-    const updatedObj = {};
+    let updatedPreferences = {}
 
+    if(user.preferences) {
+        if(looking_forBHK) {
+            updatedPreferences["looking_forBHK"] = looking_forBHK;
+        } else {
+            updatedPreferences["looking_forBHK"] = user.preferences.looking_forBHK;
+        }
+        if(zipcode) {
+            updatedPreferences["zipcode"] = zipcode;
+        } else {
+            updatedPreferences["zipcode"] = user.preferences.zipcode;
+        }
+        if(food_choices) {
+            updatedPreferences["food_choices"] = food_choices;
+        } else {
+            updatedPreferences["food_choices"] = user.preferences.food_choices;
+        }
+        if(profession) {
+            updatedPreferences["profession"] = profession;
+        } else {
+            updatedPreferences["profession"] = user.preferences.profession;
+        }
+        if(ages_between) {
+            updatedPreferences["ages_between"] = ages_between;
+        } else {
+            updatedPreferences["ages_between"] = user.preferences.ages_between;
+        }
+        if(budget) {
+            updatedPreferences["budget"] = budget;
+        } else {
+            updatedPreferences["budget"] = user.preferences.budget;
+        }
+        if(lifestyle_preferences) {
+            updatedPreferences["lifestyle_preferences"] = lifestyle_preferences;
+        } else {
+            updatedPreferences["lifestyle_preferences"] = user.preferences.lifestyle_preferences;
+        }
+        if(looking_for_accommodation) {
+            updatedPreferences["looking_for_accommodation"] = looking_for_accommodation;
+        } else {
+            updatedPreferences["looking_for_accommodation"] = user.preferences.looking_for_accommodation;
+        }
+    } else {
+        if(looking_forBHK) {
+            updatedPreferences["looking_forBHK"] = looking_forBHK;
+        } else {
+            throw new ApiError(400, "looking_forBHK Required");
+        }
+        if(zipcode) {
+            updatedPreferences["zipcode"] = zipcode;
+        }
+        else {
+            throw new ApiError(400, "zipcode Required");
+        }
+        if(food_choices) {
+            updatedPreferences["food_choices"] = food_choices;
+        } else {
+            throw new ApiError(400, "food_choices Required");
+        }
+        if(profession) {
+            updatedPreferences["profession"] = profession;
+        } else {
+            throw new ApiError(400, "profession Required");
+        }
+        if(ages_between) {
+            updatedPreferences["ages_between"] = ages_between;
+        } else {
+            throw new ApiError(400, "ages_between Required");
+        }
+        if(budget) {
+            updatedPreferences["budget"] = budget;
+        } else {
+            throw new ApiError(400, "budget Required");
+        }
+        if(lifestyle_preferences) {
+            updatedPreferences["lifestyle_preferences"] = lifestyle_preferences;
+        } else {
+            throw new ApiError(400, "lifestyle_preferences Required");
+        }
+        if(looking_for_accommodation) {
+            updatedPreferences["looking_for_accommodation"] = looking_for_accommodation;
+        } else {
+            throw new ApiError(400, "looking_for_accommodation Required");
+        }
+    }
+
+    updatedObj.preferences = updatedPreferences;
+
+    if(user.preferences) {
+        for (const key in userDetails) {
+            if (Object.hasOwnProperty.call(userDetails, key)) {
+                if (Object.keys(user.preferences).includes(key)) {
+                    updatedObj[preferences].key = userDetails[key];
+                }
+            }
+        }
+    }
+
+
+
+    
     for (const key in userDetails) {
         if (Object.hasOwnProperty.call(userDetails, key)) {
             if (user.schema.path(key)) {
@@ -139,58 +252,171 @@ export const setProfile = async(req, res) => {
 
 }
 
+export const getProfilesForUser = async(req, res) => {
+
+    try {
+
+        const userId = req.params.userId; 
+        if(!userId){
+            throw new ApiError(400, "userId Required")
+        }
+        const users = await User.find({}).select('-password -refreshToken');
+        if(!users) {
+            throw new ApiError(400, "Error getting users")
+        }
+
+        const user = await User.findById(userId).select('-password -refreshToken');
+        if (!user) {
+            throw new ApiError(404, "User not found")
+        }
+
+        const filteredUsers = await User.aggregate([
+            {
+                $match: {
+                'preferences.looking_forBHK': user.preferences.looking_forBHK,
+                'preferences.zipcode': user.preferences.zipcode,
+                'preferences.food_choices': user.preferences.food_choices,
+                'preferences.profession': user.preferences.profession,
+                'preferences.budget': user.preferences.budget,
+                'preferences.lifestyle_preferences': { $all: user.preferences.lifestyle_preferences },
+                $or: [
+                    { 
+                    'age': { $lte: user.preferences.ages_between[1] },
+                    'age': { $gte: user.preferences.ages_between[0] }
+                    }
+                ],
+                'preferences.looking_for_accommodation' : true
+                }
+            }
+        ]);
+
+        if(!filteredUsers) {
+            throw new ApiError(400, "Error getting filtered users list")
+        }
+        return res.status(201).json(
+            new ApiResponse(200, filteredUsers)
+        );
+
+    } catch(e) {
+        throw new ApiError(500, "Internal Server Error")
+    }
+
+
+}
+
+export const getfilteredUsersList = async(req, res) => {
+
+    try {
+
+        const userId = req.params.userId; 
+        if(!userId){
+            throw new ApiError(400, "userId Required")
+        }
+
+        const userPreferencesDetails = req.body;
+        const {looking_forBHK, zipcode, food_choices, profession, ages_between, budget, lifestyle_preferences} = userPreferencesDetails;
+
+        const users = await User.find({}).select('-password -refreshToken');
+        if(!users) {
+            throw new ApiError(400, "Error getting users")
+        }
+        const user = await User.findById(userId).select('-password -refreshToken');
+        if (!user) {
+            throw new ApiError(404, "User not found")
+        }
+      
+
+        const filteredUsers = await User.aggregate([
+            {
+                $match: {
+                'preferences.looking_forBHK': looking_forBHK,
+                'preferences.zipcode': zipcode,
+                'preferences.food_choices': food_choices,
+                'preferences.profession': profession,
+                'preferences.budget': budget,
+                'preferences.lifestyle_preferences': { $all: lifestyle_preferences },
+                $and: [
+                    { 
+                    'age': { $lte: ages_between[1] },
+                    'age': { $gte: ages_between[0] }
+                    }
+                ],
+                'preferences.looking_for_accommodation' : true
+                }
+            }
+        ]);
+
+        if(!filteredUsers) {
+            throw new ApiError(400, "Error getting filtered users list")
+        }
+        return res.status(201).json(
+            new ApiResponse(200, filteredUsers)
+        );
+    } catch(e) {
+        throw new ApiError(500, "Internal Server Error");
+    }
+
+
+}
+
 
 export const loginUser = async(req, res) => {
 
-    // console.log(req);
-    const { username, password } = req.body;
+    try{
 
-    if(!username){
-        throw new ApiError(400, "Username Required")
+        console.log(req);
+        const { username, password } = req.body;
+
+        if(!username){
+            throw new ApiError(400, "Username Required")
+        }
+
+        if(!password){
+            throw new ApiError(400, "Password Required")
+        }
+
+        const user = await User.findOne({username});
+
+        if(!user){
+            throw new ApiError(404, "User does not exist");
+
+        }
+
+        
+        const isPasswordValid = await user.isPasswordCorrect(password);
+
+        if(!isPasswordValid){
+                throw new ApiError(401, "Invalid Credentials");
+        }
+
+        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+
+        const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+            //sending these to cookies
+
+            const options = {
+                httpOnly : true,
+                secure : true
+            }
+
+            return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        user: loggedInUser, accessToken, refreshToken
+                    },
+                    'User logged in successfully'
+                )
+            )
+
+        } catch(e) {
+            throw new ApiError(500, "Internal Server Error");
     }
-
-    if(!password){
-        throw new ApiError(400, "Password Required")
-    }
-
-    const user = await User.findOne({username});
-
-    if(!user){
-        throw new ApiError(404, "User does not exist");
-    }
-
-    
-   const isPasswordValid = await user.isPasswordCorrect(password);
-
-   if(!isPasswordValid){
-        throw new ApiError(401, "Invalid Credentials");
-   }
-
-   const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
-
-   const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-
-    //sending these to cookies
-
-    const options = {
-        httpOnly : true,
-        secure : true
-    }
-
-    return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .redirect('/dashboard')
-    // .json(
-    //     new ApiResponse(
-    //         200,
-    //         {
-    //             user: loggedInUser, accessToken, refreshToken
-    //         },
-    //         'User logged in successfully'
-    //     )
-    // )
 }
 
 
@@ -317,7 +543,7 @@ export const swipeRight = async(req, res) => {
         throw new ApiError(401, "Invalid ObjectId String");
       } 
     let convobj= new mongoose.Types.ObjectId(otherobjID);
-    const updatedUser=await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
         { _id: userId,likes:{ $ne: otherobjID } }, 
         { $push: { likes: convobj }},
         { new: true});
@@ -333,12 +559,12 @@ export const swipeRight = async(req, res) => {
 
 export const swipeLeft = async(req, res) => {
     const userId = req.params.userId;
-    let otherobjID=req.body.userId;
+    let otherobjID = req.body.userId;
     if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
         throw new ApiError(401, "Invalid ObjectId String");
       } 
     let convobj= new mongoose.Types.ObjectId(otherobjID);
-    const updatedUser=await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
         { _id: userId,dislikes:{ $ne: otherobjID } }, 
         { $push: { dislikes: convobj }},
         { new: true});
