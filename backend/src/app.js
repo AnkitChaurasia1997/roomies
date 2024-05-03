@@ -71,7 +71,9 @@ app.use('/', extraRouter);
 
 //user routes import
 import userRouter from './routes/user.route.js';
+import groupRouter from './routes/group.route.js'
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/groups', groupRouter);
 
 
 //chat routes import 

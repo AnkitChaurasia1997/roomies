@@ -4,7 +4,7 @@ import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-
+import mongoose from "mongoose";
 
 
 
@@ -83,6 +83,60 @@ export const registerUser = async(req, res) => {
     return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered successfully")
     )
+}
+
+export const getProfile = async(req, res) => {
+
+    let userId = req.params.userId;
+    if(!userId){
+        throw new ApiError(400, "userId Required")
+    }
+    const user = await User.findById(userId);
+
+    if(!user){
+        throw new ApiError(500, "Something went wrong while getting the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, user)
+    )
+
+}
+
+export const setProfile = async(req, res) => {
+
+    const userId = req.params.userId; 
+    if(!userId){
+        throw new ApiError(400, "userId Required")
+    }
+    const userDetails = req.body;
+    console.log(userDetails)
+
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found")
+    }
+
+    const updatedObj = {};
+
+    for (const key in userDetails) {
+        if (Object.hasOwnProperty.call(userDetails, key)) {
+            if (user.schema.path(key)) {
+                updatedObj[key] = userDetails[key];
+            }
+        }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updatedObj, { new: true });
+
+    if(!updatedUser){
+        throw new ApiError(500, "Something went wrong while updating the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser, "User profile updated successfully")
+    )
+
 }
 
 
@@ -254,3 +308,46 @@ export const getLikedUsers = async (req, res) => {
     //   return res.status(500).json({ message: 'Error fetching user status' });
     }
   };
+
+
+export const swipeRight = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID=req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    const updatedUser=await User.findOneAndUpdate(
+        { _id: userId,likes:{ $ne: otherobjID } }, 
+        { $push: { likes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping right the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
+
+export const swipeLeft = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID=req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    const updatedUser=await User.findOneAndUpdate(
+        { _id: userId,dislikes:{ $ne: otherobjID } }, 
+        { $push: { dislikes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping Left the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
