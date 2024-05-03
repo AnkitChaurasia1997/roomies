@@ -93,6 +93,10 @@ const userSchema = new mongoose.Schema({
     },
     refreshToken : {
         type: String
+    },
+    is_online: {
+        type : Boolean,
+        default : false
     }
 }, {timestamps : true});
 

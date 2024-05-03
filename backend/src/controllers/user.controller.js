@@ -45,7 +45,10 @@ export const registerUser = async(req, res) => {
     }
 
     //multer keeps the file in the temp folder and returns us the file path
-    console.log(req.files.profile_picture[0].path);
+    // console.log(req.files.profile_picture[0].path);
+
+
+//---------------------------------------------------------------------------------//
     const profile_picture_localPath = req.files.profile_picture[0].path;
     if(!profile_picture_localPath){
         throw new ApiError(400, "Profile Picture is required");
@@ -57,6 +60,7 @@ export const registerUser = async(req, res) => {
         throw new ApiError(400, "Profile Picture is required");
     }
     
+//-------------------------------------------------------------------------------//
     const user = await User.create({
         username,
         email,
@@ -84,7 +88,7 @@ export const registerUser = async(req, res) => {
 
 export const loginUser = async(req, res) => {
 
-    console.log(req);
+    // console.log(req);
     const { username, password } = req.body;
 
     if(!username){
@@ -99,7 +103,6 @@ export const loginUser = async(req, res) => {
 
     if(!user){
         throw new ApiError(404, "User does not exist");
-
     }
 
     
@@ -124,15 +127,16 @@ export const loginUser = async(req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                user: loggedInUser, accessToken, refreshToken
-            },
-            'User logged in successfully'
-        )
-    )
+    .redirect('/dashboard')
+    // .json(
+    //     new ApiResponse(
+    //         200,
+    //         {
+    //             user: loggedInUser, accessToken, refreshToken
+    //         },
+    //         'User logged in successfully'
+    //     )
+    // )
 }
 
 
@@ -209,3 +213,44 @@ export const getNewRefreshToken = async(req, res) => {
         throw new ApiError(401, error?.message || "Invalid refresh token");
     }
 };
+
+//Same for matched User
+export const getLikedUsers = async (req, res) => {
+    try {
+      const user = req.user;
+      const likedUsersIds = await User.findById(user._id, { likes: 1, _id: 0 });
+      const likedUsers = await User.find({ _id: { $in: likedUsersIds.likes } }, {
+        refresh_token: 0,
+        password: 0,
+      });
+      const userObj = JSON.stringify(user);
+
+      return res.status(200).render('likedUserList', { likedUsers : likedUsers, userObj : userObj });
+    //   .json(
+    //     new ApiResponse(
+    //       200,
+    //       {
+    //         likedUsers: likedUsers,
+    //       },
+    //       `All the liked users by ${user.firstName}`
+    //     )
+    //   );
+    } catch (error) {
+      throw new ApiError(500, error?.message || "Error fetching liked users");
+    }
+  };
+
+
+  export const getUserStatus = async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const userStatus = await User.findById(userId).select('is_online');
+      console.log(userStatus)
+      return res.json(userStatus);
+    } catch (error) {
+      console.error(error);
+      throw new ApiError(500, error?.message || "Error fetching user status users");
+
+    //   return res.status(500).json({ message: 'Error fetching user status' });
+    }
+  };
