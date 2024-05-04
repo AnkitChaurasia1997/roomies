@@ -28,10 +28,10 @@ const preferencesSchema = new mongoose.Schema({
         },
         message : "Invalid age range",
     },
-    lifestyle_preferences : [{
+    lifestyle_preferences : {
         type : [String],
         enum : ['Drinking', 'Smoking', 'Vegetarian', 'NonVegetarian', 'Pets', 'Cleanliness']
-    }],
+    },
     looking_for_accommodation : {
         type : Boolean,
         required : [true, "Can't be empty"]
@@ -48,23 +48,21 @@ const membersSchema = new mongoose.Schema({
         type : String,
         required : [true, "last name can't be empty!"]
     },
-    MemberAge:{
+    age:{
         type: Number,
         min: [18, "Age should be greater than 18"],
         max: 90,
         required : true,
         trim : true
     },
-    memberEmail : {
+    email : {
         type : String,
         required : [true, "email can't be empty!"],
-        unique : true,
-        trim : true,
+        trim : true
     },
     gender : {
         type : String,
         required : [true, "gender can't be empty!"],
-        unique : true,
         trim : true,
     },
 })
@@ -97,7 +95,7 @@ const groupSchema = new mongoose.Schema({
         type : String
     },
     members : {
-        type : membersSchema,
+        type : [membersSchema]
     },
     budget : {
         type : Number

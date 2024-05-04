@@ -1,5 +1,6 @@
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
+import { Group } from "../models/group.model.js";
 import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -290,6 +291,28 @@ export const getProfilesForUser = async(req, res) => {
             }
         ]);
 
+        const filteredGroups = await Group.aggregate([
+            {
+                $match: {
+                'preferences.looking_forBHK': user.preferences.looking_forBHK,
+                'preferences.zipcode': user.preferences.zipcode,
+                'preferences.food_choices': user.preferences.food_choices,
+                'preferences.profession': user.preferences.profession,
+                'preferences.budget': user.preferences.budget,
+                'preferences.lifestyle_preferences': { $all: user.preferences.lifestyle_preferences },
+                $or: [
+                    { 
+                    'age': { $lte: user.preferences.ages_between[1] },
+                    'age': { $gte: user.preferences.ages_between[0] }
+                    }
+                ],
+                'preferences.looking_for_accommodation' : true
+                }
+            }
+        ]);
+
+        filteredUsers.push(...filteredGroups);
+
         if(!filteredUsers) {
             throw new ApiError(400, "Error getting filtered users list")
         }
@@ -325,25 +348,54 @@ export const getfilteredUsersList = async(req, res) => {
             throw new ApiError(404, "User not found")
         }
       
+        const match = {
+            'preferences.looking_for_accommodation' : true
+        }
+        if(looking_forBHK) {
+            match["preferences.looking_forBHK"] = looking_forBHK
+        }
+        if(zipcode) {
+            match["preferences.zipcode"] = zipcode
+        }
+        if(food_choices) {
+            match["preferences.food_choices"] = food_choices
+        }
+        if(profession) {
+            match["preferences.profession"] = profession
+        }
+        if(lifestyle_preferences && lifestyle_preferences.length > 0) {
+            match["preferences.lifestyle_preferences"] = { $all: lifestyle_preferences }
+        }
+
+        if (ages_between && ages_between.length === 2 && ages_between.every(age => typeof age === 'number')) {
+            match.$and = [
+                { 'age': { $lte: ages_between[1] } },
+                { 'age': { $gte: ages_between[0] } }
+            ];
+        }
+
+        // const filteredUsers = await User.aggregate([
+        //     {
+        //         $match: {
+        //         'preferences.looking_forBHK': looking_forBHK,
+        //         'preferences.zipcode': zipcode,
+        //         'preferences.food_choices': food_choices,
+        //         'preferences.profession': profession,
+        //         'preferences.budget': budget,
+        //         'preferences.lifestyle_preferences': { $all: lifestyle_preferences },
+        //         $and: [
+        //             { 
+        //             'age': { $lte: ages_between[1] },
+        //             'age': { $gte: ages_between[0] }
+        //             }
+        //         ],
+        //         'preferences.looking_for_accommodation' : true
+        //         }
+        //     }
+        // ]);
 
         const filteredUsers = await User.aggregate([
-            {
-                $match: {
-                'preferences.looking_forBHK': looking_forBHK,
-                'preferences.zipcode': zipcode,
-                'preferences.food_choices': food_choices,
-                'preferences.profession': profession,
-                'preferences.budget': budget,
-                'preferences.lifestyle_preferences': { $all: lifestyle_preferences },
-                $and: [
-                    { 
-                    'age': { $lte: ages_between[1] },
-                    'age': { $gte: ages_between[0] }
-                    }
-                ],
-                'preferences.looking_for_accommodation' : true
-                }
-            }
+            { $match: match }
         ]);
 
         if(!filteredUsers) {
@@ -355,8 +407,6 @@ export const getfilteredUsersList = async(req, res) => {
     } catch(e) {
         throw new ApiError(500, "Internal Server Error");
     }
-
-
 }
 
 

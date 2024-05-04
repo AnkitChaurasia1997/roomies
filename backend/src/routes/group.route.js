@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerGroup } from "../controllers/group.controller.js";
+import { registerGroup, setProfile, getProfile } from "../controllers/group.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -29,6 +29,14 @@ router
 // router
 //     .route("/refreshToken")
 //     .post(getNewRefreshToken);
+
+router
+    .route("/profile/:userId")
+    .post(setProfile)
+
+router
+    .route("/profile/:userId")
+    .get(getProfile)
 
 
 export default router;
