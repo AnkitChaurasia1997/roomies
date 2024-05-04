@@ -111,6 +111,10 @@ const groupSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref: "Group"
     }],
+    matches:[{
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "Group"
+    }],
     refreshToken : {
         type: String
     }
@@ -135,7 +139,7 @@ groupSchema.methods.generateAccessToken = function(){
         {
             _id : this._id,
             email : this.email,
-            username : this.username
+            name : this.name
         },
         process.env.ACCESS_TOKEN_SECRET, 
         {

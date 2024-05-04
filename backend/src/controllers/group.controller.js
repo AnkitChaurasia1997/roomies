@@ -4,7 +4,8 @@ import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-
+import { Match } from "../models/match.model.js";
+import mongoose from "mongoose";
 
 export const registerGroup = async(req, res) => {
 
@@ -20,7 +21,7 @@ export const registerGroup = async(req, res) => {
         });
 
         if(existingGroup){
-            throw new ApiError(409, "Group with email or username already exists.");
+            throw new ApiError(409, "Group with email or name already exists.");
         }
 
         //multer keeps the file in the temp folder and returns us the file path
@@ -458,3 +459,167 @@ export const getProfile = async(req, res) => {
     }
 
 }
+
+export const swipeRight = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID=req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    let convuserId= new mongoose.Types.ObjectId(userId);
+    let updatedUser = await Group.findOneAndUpdate(
+        { _id: userId,likes:{ $ne: otherobjID } }, 
+        { $push: { likes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping right the user.");
+    }
+    let checkingindislike = await Group.findOneAndUpdate(
+        { _id: userId }, 
+        { $pull: { dislikes: convobj }},
+        { new: true});
+    console.log(checkingindislike);
+
+    //Checking in likedby Match
+    let existingmatch = await Match.findOne({
+        like:convobj,likedBy:convuserId
+    });
+    if(!existingmatch){
+        //Creating a like and likedby
+        existingmatch=await Match.create({ 
+            like:convobj,likedBy:convuserId
+        });
+    }
+   //Checking in like Match
+    let checkingmatch=await Match.findOne({
+        like:convuserId,likedBy:convobj
+    });
+   if(checkingmatch && existingmatch){
+//both present adding adding in likedby matches in user
+     let updatedmatch = await Group.findOneAndUpdate(
+        { _id: userId,matches:{ $ne: otherobjID } }, 
+        { $push: { matches: convobj }},
+        { new: true});
+        if(updatedmatch){
+            updatedUser=updatedmatch;
+        }
+   }
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
+
+export const swipeLeft = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID = req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    let userobjID=new mongoose.Types.ObjectId(userId);
+    let checkinginlike = await Group.findOneAndUpdate(
+        { _id: userId }, 
+        { $pull: { likes: convobj,matches:convobj }},
+        { new: true});
+    console.log(checkinginlike);
+    const updatedUser = await Group.findOneAndUpdate(
+        { _id: userId,dislikes:{ $ne: otherobjID } }, 
+        { $push: { dislikes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping Left the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
+
+export const loginUser = async(req, res) => {
+
+    try{
+
+        console.log(req);
+        const { name, password } = req.body;
+
+        if(!name){
+            throw new ApiError(400, "name Required")
+        }
+
+        if(!password){
+            throw new ApiError(400, "Password Required")
+        }
+
+        const user = await Group.findOne({name});
+
+        if(!user){
+            throw new ApiError(404, "User does not exist");
+
+        }
+
+        
+        const isPasswordValid = await user.isPasswordCorrect(password);
+
+        if(!isPasswordValid){
+                throw new ApiError(401, "Invalid Credentials");
+        }
+
+        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+
+        const loggedInUser = await Group.findById(user._id).select("-password -refreshToken");
+
+            //sending these to cookies
+
+            const options = {
+                httpOnly : true,
+                secure : true
+            }
+
+            return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        user: loggedInUser, accessToken, refreshToken
+                    },
+                    'User logged in successfully'
+                )
+            )
+
+        } catch(e) {
+            throw new ApiError(500, "Internal Server Error");
+    }
+}
+
+
+export const logoutUser = async(req, res) => {
+    await Group.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set : {
+                refreshToken : undefined
+            }
+        },
+        {
+            new : true
+        }
+    )
+
+    const options = {
+        httpOnly : true,
+        secure : true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {} , "User logged out successfully"));
+
+};
