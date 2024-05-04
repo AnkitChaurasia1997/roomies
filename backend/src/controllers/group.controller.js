@@ -4,7 +4,8 @@ import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
-
+import { Match } from "../models/match.model.js";
+import mongoose from "mongoose";
 
 export const registerGroup = async(req, res) => {
 
@@ -458,3 +459,82 @@ export const getProfile = async(req, res) => {
     }
 
 }
+
+export const swipeRight = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID=req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    let convuserId= new mongoose.Types.ObjectId(userId);
+    let updatedUser = await Group.findOneAndUpdate(
+        { _id: userId,likes:{ $ne: otherobjID } }, 
+        { $push: { likes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping right the user.");
+    }
+    let checkingindislike = await Group.findOneAndUpdate(
+        { _id: userId }, 
+        { $pull: { dislikes: convobj }},
+        { new: true});
+    console.log(checkingindislike);
+
+    //Checking in likedby Match
+    let existingmatch = await Match.findOne({
+        like:convobj,likedBy:convuserId
+    });
+    if(!existingmatch){
+        //Creating a like and likedby
+        existingmatch=await Match.create({ 
+            like:convobj,likedBy:convuserId
+        });
+    }
+   //Checking in like Match
+    let checkingmatch=await Match.findOne({
+        like:convuserId,likedBy:convobj
+    });
+   if(checkingmatch && existingmatch){
+//both present adding adding in likedby matches in user
+     let updatedmatch = await Group.findOneAndUpdate(
+        { _id: userId,matches:{ $ne: otherobjID } }, 
+        { $push: { matches: convobj }},
+        { new: true});
+        if(updatedmatch){
+            updatedUser=updatedmatch;
+        }
+   }
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
+
+export const swipeLeft = async(req, res) => {
+    const userId = req.params.userId;
+    let otherobjID = req.body.userId;
+    if (!(mongoose.Types.ObjectId.isValid(otherobjID) && mongoose.Types.ObjectId.isValid(userId))) {
+        throw new ApiError(401, "Invalid ObjectId String");
+      } 
+    let convobj= new mongoose.Types.ObjectId(otherobjID);
+    let userobjID=new mongoose.Types.ObjectId(userId);
+    let checkinginlike = await Group.findOneAndUpdate(
+        { _id: userId }, 
+        { $pull: { likes: convobj,matches:convobj }},
+        { new: true});
+    console.log(checkinginlike);
+    const updatedUser = await Group.findOneAndUpdate(
+        { _id: userId,dislikes:{ $ne: otherobjID } }, 
+        { $push: { dislikes: convobj }},
+        { new: true});
+    if(!updatedUser){
+        throw new ApiError(500, "Something wrong while swiping Left the user.");
+    }
+
+    return res.status(201).json(
+        new ApiResponse(200, updatedUser)
+    );
+
+}
+
