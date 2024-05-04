@@ -21,7 +21,7 @@ export const registerGroup = async(req, res) => {
         });
 
         if(existingGroup){
-            throw new ApiError(409, "Group with email or username already exists.");
+            throw new ApiError(409, "Group with email or name already exists.");
         }
 
         //multer keeps the file in the temp folder and returns us the file path
@@ -538,3 +538,88 @@ export const swipeLeft = async(req, res) => {
 
 }
 
+export const loginUser = async(req, res) => {
+
+    try{
+
+        console.log(req);
+        const { name, password } = req.body;
+
+        if(!name){
+            throw new ApiError(400, "name Required")
+        }
+
+        if(!password){
+            throw new ApiError(400, "Password Required")
+        }
+
+        const user = await Group.findOne({name});
+
+        if(!user){
+            throw new ApiError(404, "User does not exist");
+
+        }
+
+        
+        const isPasswordValid = await user.isPasswordCorrect(password);
+
+        if(!isPasswordValid){
+                throw new ApiError(401, "Invalid Credentials");
+        }
+
+        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+
+        const loggedInUser = await Group.findById(user._id).select("-password -refreshToken");
+
+            //sending these to cookies
+
+            const options = {
+                httpOnly : true,
+                secure : true
+            }
+
+            return res
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)
+            .json(
+                new ApiResponse(
+                    200,
+                    {
+                        user: loggedInUser, accessToken, refreshToken
+                    },
+                    'User logged in successfully'
+                )
+            )
+
+        } catch(e) {
+            throw new ApiError(500, "Internal Server Error");
+    }
+}
+
+
+export const logoutUser = async(req, res) => {
+    await Group.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set : {
+                refreshToken : undefined
+            }
+        },
+        {
+            new : true
+        }
+    )
+
+    const options = {
+        httpOnly : true,
+        secure : true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {} , "User logged out successfully"));
+
+};

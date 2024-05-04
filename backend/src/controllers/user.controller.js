@@ -1,6 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { User, userSchema } from "../models/user.model.js";
 import { Match } from "../models/match.model.js";
+import { Group } from "../models/group.model.js";
 import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
