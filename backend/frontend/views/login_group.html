@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Group</title>
+  <link rel="stylesheet" href="roomies\backend\frontend\public\css\styles.css">
+</head>
+<body id="body-login">
+  <div class="container-login">
+    <div class="form-login">
+      <h1>Login Group</h1>
+      <form id="login-group-form">
+        <input type="text" id="name" name="name" placeholder="Group Name" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn">Login</button>
+      </form>
+      <p>Don't have an account? <a href="register.html">Register Here</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("login-group-form").addEventListener("submit", async function(event) {
+      event.preventDefault(); 
+
+      const name = document.getElementById("name").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch('/login-group', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Login successful
+          alert(data.message); // Display success message
+          // Redirect to dashboard or homepage
+          window.location.href = '/dashboard';
+        } else {
+          // Login failed
+          alert(data.message); // Display error message
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+      }
+    });
+  </script>
+</body>
+</html>
