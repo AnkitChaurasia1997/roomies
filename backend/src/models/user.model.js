@@ -87,6 +87,10 @@ export const userSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref: "User"
     }],
+    matches:[{
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
     password : {
         type : String,
         required : [true, 'Password is required']
