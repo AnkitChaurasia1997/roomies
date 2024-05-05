@@ -30,7 +30,7 @@ app.use(express.urlencoded(
         limit : "16kb"
     }
 ));
-
+//app.use('/frontend/public', express.static('frontend/public'));
 
 app.use(express.static(path.dirname(fileURLToPath(import.meta.url)) + '/../frontend/public'));
 //Crud operations on cookies
@@ -44,9 +44,6 @@ app.engine('hbs', engine({
     partialsDir: './frontend/views/partials/',
     // protectedStrictMode: false
   }));
-
-
-
 
 // console.log('Views directory:', app.get('views'));
 
@@ -65,7 +62,7 @@ initSocketIO(server);
 
 
 //extra routes import
-import extraRouter from './routes/extra.route.js';
+import extraRouter from './routes/index.routre.js';
 app.use('/', extraRouter);
 
 

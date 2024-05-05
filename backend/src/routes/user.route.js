@@ -7,6 +7,9 @@ const router = Router();
 
 router
     .route("/register")
+    .get((req, res) => {
+        res.render('register_user');
+    })
     .post(upload.fields([
         {
             name:"profile_picture",
@@ -17,6 +20,9 @@ router
 
 router
     .route("/login")
+    .get((req, res) => {
+        res.render('login_user');
+    })
     .post(loginUser)
 
 // secured route

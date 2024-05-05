@@ -1,0 +1,19 @@
+ <div id="body-register" class="container-register">
+    <div class="form-register">
+            <h1>Login</h1>
+            <form id="userlogin" action="/api/v1/users/login" method="GET">
+            <button id="loginIndividualBtn" type="button" class="btn">Login as an Individual</button></form>
+             <form id="grouplogin" action="/api/v1/groups/login" method="GET">
+            <button id="loginGroupBtn" type="button" class="btn">Login as a Group</button></form>
+            <p>Don't Have an account? <a href="/register">Register here</a></p>
+        </div>
+    </div>
+    <script>
+    document.getElementById('loginIndividualBtn').addEventListener('click', function() {
+        document.getElementById('userlogin').submit();
+    });
+
+    document.getElementById('loginGroupBtn').addEventListener('click', function() {
+        document.getElementById('grouplogin').submit();
+    });
+</script>
