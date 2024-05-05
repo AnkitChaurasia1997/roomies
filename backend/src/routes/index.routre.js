@@ -23,8 +23,8 @@ router
     })
 
 router
-    .route('/dashboard')
-    .get(verifyJWT, dashboardController)
+    .route('/chat')
+    .get(verifyJWT, chatController)
 
 router
     .route('/explore')
