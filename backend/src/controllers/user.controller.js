@@ -455,15 +455,16 @@ export const loginUser = async(req, res) => {
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
-            .json(
-                new ApiResponse(
-                    200,
-                    {
-                        user: loggedInUser, accessToken, refreshToken
-                    },
-                    'User logged in successfully'
-                )
-            )
+            .redirect('/explore')
+            // .json(
+            //     new ApiResponse(
+            //         200,
+            //         {
+            //             user: loggedInUser, accessToken, refreshToken
+            //         },
+            //         'User logged in successfully'
+            //     )
+            // )
 
         } catch(e) {
             throw new ApiError(500, "Internal Server Error");
