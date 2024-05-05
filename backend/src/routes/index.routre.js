@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { dashboardController } from "../controllers/dashboard.controller.js";
+import { exploreController } from "../controllers/explore.controller.js";
 
 const router  = Router();
 router
@@ -24,5 +25,9 @@ router
 router
     .route('/dashboard')
     .get(verifyJWT, dashboardController)
+
+router
+    .route('/explore')
+    .get(verifyJWT, exploreController);
 
 export default router;
