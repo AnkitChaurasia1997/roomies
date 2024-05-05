@@ -1,19 +1,25 @@
 import { User } from "../models/user.model.js";
 
-export const shuffleProfiles = (profiles, username) => {
-    // Remove the user from the profiles array
+export const shuffleProfiles = async (profiles, username, currentUserId) => {
+    // Get the current user's likes
+    const currentUser = await User.findById(currentUserId);
+    const likedUsers = currentUser.likes.map(like => like.toString());
+    // const dislikedUsers = currentUser.rejects.map(reject => reject.toString());
+    // const matchedUsers = currentUser.matches.map(match => match.toString());
+    // Remove the user from the profiles array and users that the current user has liked
     const filteredProfiles = profiles.filter(profile => {
-        return profile.username !== username;
+        return profile.username !== username && !likedUsers.includes(profile._id.toString()) 
+        // && !dislikedUsers.includes(profile._id.toString()) && !matchedUsers.includes(profile._id.toString());
     });
-  
+
     // Shuffle the array
     for (let i = filteredProfiles.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [filteredProfiles[i], filteredProfiles[j]] = [filteredProfiles[j], filteredProfiles[i]];
+        const j = Math.floor(Math.random() * (i + 1));
+        [filteredProfiles[i], filteredProfiles[j]] = [filteredProfiles[j], filteredProfiles[i]];
     }
-  
+
     return filteredProfiles;
-  };
+};
   
 export const exploreController = async(req, res) => {
     try {
@@ -25,8 +31,8 @@ export const exploreController = async(req, res) => {
 
         const username = req.user.username || req.user.name;
 
-        const filteredProfiles = shuffleProfiles(profiles, username);
-        console.log(filteredProfiles);
+        const filteredProfiles = await shuffleProfiles(profiles, username, req.user._id);
+        // console.log(filteredProfiles);
         return res.render('explore', { profiles : filteredProfiles, userID : req.user._id });
       } catch (error) {
         console.error(error);
