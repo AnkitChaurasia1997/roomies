@@ -37,7 +37,8 @@ const preferencesSchema = new mongoose.Schema({
     },
     looking_for_accommodation : {
         type : Boolean,
-        required : [true, "Can't be empty"]
+        default : true
+        // required : [true, "Can't be empty"]
     }
 })
 
