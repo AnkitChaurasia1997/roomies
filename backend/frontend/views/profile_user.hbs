@@ -1,17 +1,72 @@
-<div class="profile-data">
-  <img src="{{profile_pic}}" alt="Profile Picture">
-  <h2>User Detailes</h2>
-  <div class="details">
-    <p><strong>Username:</strong>{{username}}</p>
-    <p><strong>Email:</strong> {{email}}</p>
-    <p><strong>First Name:</strong>{{firstname}}</p>
-    <p><strong>Last Name:</strong>{{lastname}}</p>
-    <p><strong>Bio:</strong> {{bio}}</p>
-    <p><strong>Age:</strong> {{age}}</p>
-    <p><strong>Budget:</strong> {{budget}}</p>
-    <p><strong>Gender:</strong> {{gender}}</p>
-    <p><strong>Location:</strong> {{location}}</p>
-    <p><strong>Food Choice:</strong> {{food_choice}}</p>
-    <p><strong>Profession:</strong> {{profession}}</p>
+<form id="profile-edit-form">
+  <h2>User Details</h2>
+    <div class="form-group">
+    <label for="username">Username:</label>
+    <textarea id="username" name="username">{{username}}</textarea>
   </div>
-</div>
+  <div class="form-group">
+    <label for="email">Email:</label>
+    <textarea id="email" name="email">{{email}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="food_choices">Food Choices:</label>
+    <textarea id="food_choices" name="food_choices">{{food_choices}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="firstName">First Name:</label>
+    <textarea id="firstName" name="firstName">{{firstName}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="lastName">Last Name:</label>
+    <textarea id="lastName" name="lastName">{{lastName}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="bio">Bio:</label>
+    <input id="bio" name="bio" value="{{bio}}">
+  </div>
+  <div class="form-group">
+    <label for="age">Age:</label>
+    <input id="age" name="age" value="{{age}}">
+  </div>
+  <div class="form-group">
+    <label for="profile_picture">Profile Picture:</label>
+    <input type="file" id="profile_picture" name="profile_picture">
+  </div>
+
+  <h2>User Preferences</h2>
+    <div class="form-group">
+    <label for="looking_forBHK">Looking For Number of BHK:</label>
+    <textarea id="looking_forBHK" name="looking_forBHK">{{looking_forBHK}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="zipcode">Zipcode:</label>
+    <textarea id="zipcode" name="zipcode">{{zipcode}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="food_choices">Food Choices:</label>
+    <textarea id="food_choices" name="food_choices">{{food_choices}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="profession">Profession:</label>
+    <textarea id="profession" name="profession">{{profession}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="ages_between">Ages between:</label>
+    <textarea id="ages_between" name="ages_between">{{ages_between}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="budget">Budget:</label>
+    <input type="number" id="budget" name="budget" value="{{budget}}">
+  </div>
+  <div class="form-group">
+    <label for="lifestyle_preferences">Lifestyle Preferences:</label>
+    <input  id="lifestyle_preferences" name="lifestyle_preferences" value="{{lifestyle_preferences}}">
+  </div>
+  <div class="form-group">
+    <label for="looking_for_accommodation">Looking for Accommodation:</label>
+    <input  id="looking_for_accommodation" name="looking_for_accommodation" value="{{looking_for_accommodation}}">
+  </div>
+
+  <button type="submit" class="btn">Update</button>
+  <button type="button" id="cancel-btn" class="btn">Cancel</button>
+</form>
