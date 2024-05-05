@@ -62,8 +62,8 @@ initSocketIO(server);
 
 
 //extra routes import
-import extraRouter from './routes/index.routre.js';
-app.use('/', extraRouter);
+import indexRouter from './routes/index.routre.js';
+app.use('/', indexRouter);
 
 
 //user routes import
@@ -77,4 +77,9 @@ app.use('/api/v1/groups', groupRouter);
 
 import chatRouter from './routes/chat.route.js'
 app.use('/api/v1/chats', chatRouter);
+
+
+//swipe routes
+import swipeRouter from './routes/swipe.route.js'
+app.use('/api/v1', swipeRouter);
 

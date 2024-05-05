@@ -1,18 +1,81 @@
-<script id="explore-profile-card" type="text/x-handlebars-template">
-  <div class="exp-pro-card">
-    <div class="exp-img">
-      <img src="{{imageUrl}}" alt="" class="exp-pro-img">
-    </div>
-    <div class="exp-pro-text-data">
-      <span class="exp-name">{{name}}</span>
-      <span class="exp-job">{{profession}}</span>
-      <br>
-      <br>
-    </div>
-    <div class="exp-button">
-      <button class="btn">NO</button>
-      <button class="btn">More Info</button>
-      <button class="btn">Yes</button>
-    </div>
-  </div>
+<div class="profile-container">
+    {{#each profiles}}
+        <div class="exp-pro-card" data-user-id="{{_doc._id}}">
+            <div class="exp-img">
+            <img src="{{_doc.profile_picture}}" alt="" class="exp-pro-img">
+            </div>
+            <div class="exp-pro-text-data">
+            <span class="exp-name">{{_doc.firstName}} {{_doc.lastName}}</span>
+            <span class="exp-job">{{_doc.preferences.profession}}</span>
+            <br>
+            <br>
+            </div>
+            <div class="exp-button">
+            <button class="btn no-btn" onclick="sendResponse('no', this.closest('.exp-pro-card'))">NO</button>
+            <button class="btn" onclick="moreInfo(this)">More Info</button>
+            <button class="btn yes-btn" onclick="sendResponse('yes', this.closest('.exp-pro-card'))">Yes</button>
+            </div>
+        </div>
+    {{/each}}
+</div>
+
+<script>
+
+function moreInfo(element) {
+        const userID = element.closest('.exp-pro-card').dataset.userId;
+        console.log(`Clicked on user with ID: ${userID}`);
+        
+        // Make a GET request to the API endpoint
+        fetch(`/api/v1/users/profilePage?userID=${userID}`)
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+}
+
+
+function sendResponse(response, element) {
+  const like = element.dataset.userId;
+  const likedby = '{{userID}}';
+  console.log(`Clicked on user with ID: ${like}`);
+  console.log(`Current user ID: ${likedby}`);
+
+  const url = response === 'no' ? '/api/v1/swipeLeft' : '/api/v1/swipeRight';
+  const card = element; // Get the card element
+
+  // Send the fetch request
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ like, likedby })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+
+      // Create a popup element
+      const popup = document.createElement('div');
+      popup.classList.add('popup');
+      popup.textContent = data.data.message; // Assuming the response contains a 'message' property
+
+      document.body.appendChild(popup);
+
+      // Add the fade-out class to the popup after a delay
+      setTimeout(() => {
+        popup.classList.add('fade-out');
+      }, 2000); // Delay before fading out the popup
+
+      // Remove the popup from the DOM after the fade-out animation completes
+      setTimeout(() => {
+        popup.remove();
+      }, 2500); // Delay should match the transition duration in CSS + popup fade-out delay
+
+      // Remove the card from the DOM after the popup has been removed
+      setTimeout(() => {
+        card.remove();
+      }, 2500); // Delay should match the transition duration in CSS + popup fade-out delay
+    })
+    .catch((error) => console.error(error));
+}
 </script>
