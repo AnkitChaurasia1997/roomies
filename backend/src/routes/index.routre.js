@@ -2,6 +2,7 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { dashboardController } from "../controllers/dashboard.controller.js";
 import { exploreController } from "../controllers/explore.controller.js";
+import { matchedController } from "../controllers/match.controller.js";
 
 const router  = Router();
 router
