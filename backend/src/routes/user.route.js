@@ -7,7 +7,7 @@ const router = Router();
 
 router
     .route("/register")
-    .get((req, res) => {
+    .get(async (req, res) => {
         res.render('register_user');
     })
     .post(upload.fields([

@@ -82,9 +82,7 @@ export const registerUser = async(req, res) => {
         throw new ApiError(500, "Something went wrong while registering the user.");
     }
 
-    return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered successfully")
-    )
+    res.redirect('/api/v1/users/login');
 }
 
 export const getProfile = async(req, res) => {
@@ -230,8 +228,6 @@ export const setProfile = async(req, res) => {
             }
         }
     }
-
-
 
     
     for (const key in userDetails) {
