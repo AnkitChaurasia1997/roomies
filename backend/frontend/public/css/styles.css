@@ -478,3 +478,64 @@ select {
 .popup.fade-out {
   opacity: 0;
 }
+
+/*chating page*/
+.chat-window {
+  width: 400px;
+  height: 600px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+}
+
+.user-list {
+  flex: 0 0 100px;
+  background-color: #f2f2f2;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.user-item {
+  padding: 5px;
+  background-color: #fff;
+  border-radius: 3px;
+  margin-bottom: 5px;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.chat-area {
+  flex: 1;
+  background-color: #fff;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.message-input {
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f2f2f2;
+}
+
+.message-input input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.message-input button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
