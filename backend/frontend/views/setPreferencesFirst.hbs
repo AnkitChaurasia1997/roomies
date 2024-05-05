@@ -1,0 +1,76 @@
+<main>
+<form id="profile-edit-form" action="/setPreferences" method="POST">
+  <h2>User Preferences</h2>
+  <div class="form-group">
+    <label for="looking_forBHK">Looking For Number of BHK:</label>
+    <textarea id="looking_forBHK" name="looking_forBHK">{{user.preferences.looking_forBHK}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="zipcode">Zipcode:</label>
+    <textarea id="zipcode" name="zipcode">{{user.preferences.zipcode}}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="food_choices">Food Choices:</label>
+    <input type="radio" id="vegetarian" name="food_choices" value="vegetarian">
+    <label for="vegetarian">Vegetarian</label>
+    <input type="radio" id="non-vegetarian" name="food_choices" value="non-vegetarian">
+    <label for="non-vegetarian">Non-Vegetarian</label>
+  </div>
+  <div class="form-group">
+    <label for="profession">Profession:</label>
+    <input type="radio" id="student" name="profession" value="student">
+    <label for="student">Student</label>
+    <input type="radio" id="working" name="profession" value="working">
+    <label for="working">Working</label>
+  </div>
+  <div class="form-group">
+    <label for="age-range">Age Range:</label>
+    <input type="number" id="min-age" name="ages_between[0]" placeholder="Min Age">
+    <input type="number" id="max-age" name="ages_between[1]" placeholder="Max Age">
+</div>
+  <div class="form-group">
+    <label for="lifestyle_preferences">Lifestyle Preferences:</label>
+    <input type="checkbox" id="Drinking" name="lifestyle_preferences" value="Drinking">
+    <label for="Drinking">Drinking</label>
+    <input type="checkbox" id="Smoking" name="lifestyle_preferences" value="Smoking">
+    <label for="Smoking">Smoking</label>
+    <input type="checkbox" id="Vegetarian" name="lifestyle_preferences" value="Vegetarian">
+    <label for="Vegetarian">Vegetarian</label>
+    <input type="checkbox" id="NonVegetarian" name="lifestyle_preferences" value="NonVegetarian">
+    <label for="NonVegetarian">Non-Vegetarian</label>
+    <input type="checkbox" id="Pets" name="lifestyle_preferences" value="Pets">
+    <label for="Pets">Pets</label>
+    <input type="checkbox" id="Cleanliness" name="lifestyle_preferences" value="Cleanliness">
+    <label for="Cleanliness">Cleanliness</label>
+  </div>
+  <div class="form-group">
+    <label for="budget">Budget:</label>
+    <input type="number" id="budget" name="budget" value="{{user.preferences.budget}}">
+  </div>
+  <div class="form-group">
+    <label for="lifestyle_preferences">Lifestyle Preferences:</label>
+    <input  id="lifestyle_preferences" name="lifestyle_preferences" value="{{user.preferences.lifestyle_preferences}}">
+  </div>
+  <div class="form-group">
+    <label for="looking_for_accommodation">Looking for Accommodation:</label>
+    <input  id="looking_for_accommodation" name="looking_for_accommodation" value="{{user.preferences.looking_for_accommodation}}">
+  </div>
+
+  <button type="submit" class="btn">Update</button>
+  <button type="button" id="cancel-btn" class="btn">Cancel</button>
+</form>
+<script>
+    const minAgeInput = document.getElementById('min-age');
+    const maxAgeInput = document.getElementById('max-age');
+    const minAgeValue = document.getElementById('min-age-value');
+    const maxAgeValue = document.getElementById('max-age-value');
+
+    minAgeInput.addEventListener('input', (e) => {
+    minAgeValue.textContent = e.target.value;
+    });
+
+    maxAgeInput.addEventListener('input', (e) => {
+    maxAgeValue.textContent = e.target.value;
+    });
+</script>
+</main>
