@@ -1,7 +1,7 @@
 <main>
-  <h1>Liked Users</h1>
+  <h1>Matched Users</h1>
   <div class="sidebar">
-    {{#each likedUsers}}
+    {{#each matchedUsers}}
     <div class="user">
       <span class="status {{#if _doc.is_online}}online{{else}}offline{{/if}}" data-user-id="{{_doc._id}}"></span>
       <a href="#" class="username" data-user-id="{{_doc._id}}" onclick="showChatWindow('{{_doc._id}}', '{{_doc.firstName}}')">
