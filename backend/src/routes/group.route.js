@@ -7,7 +7,7 @@ const router = Router();
 
 router
     .route("/register")
-    .get((req, res) => {
+    .get(async (req, res) => {
         res.render('register_group');
     })
     .post(upload.fields([
@@ -20,7 +20,7 @@ router
 
 router
     .route("/login")
-    .get((req, res) => {
+    .get(async (req, res) => {
         res.render('login_group');
     })
     .post(loginUser)
@@ -35,6 +35,8 @@ router
 // router
 //     .route("/refreshToken")
 //     .post(getNewRefreshToken);
+
+
 
 router
     .route("/profile/:userId")

@@ -54,9 +54,7 @@ export const registerGroup = async(req, res) => {
             throw new ApiError(500, "Something went wrong while registering the group.");
         }
 
-        return res.status(201).json(
-            new ApiResponse(200, createdGroup, "Group registered successfully")
-        )
+        res.redirect('/api/v1/groups/login');
 
     } catch(e) {
         throw new ApiError(500, "Internal Server Error");
@@ -582,15 +580,7 @@ export const loginUser = async(req, res) => {
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
-            .json(
-                new ApiResponse(
-                    200,
-                    {
-                        user: loggedInUser, accessToken, refreshToken
-                    },
-                    'User logged in successfully'
-                )
-            )
+            .redirect("explore");
 
         } catch(e) {
             throw new ApiError(500, "Internal Server Error");

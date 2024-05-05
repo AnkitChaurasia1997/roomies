@@ -2,51 +2,19 @@
   <div id="body-register" class="container-register">
     <div class="form-register">
       <h1>Register Group</h1>
-      <form id="register-group-form">
+      <form id="register-group-form" action="/api/v1/groups/register" method="POST" enctype="multipart/form-data">
         <input type="text" id="name" name="name" placeholder="Group Name" required>
         <input type="email" id="email" name="email" placeholder="Email" required>
         <input type="password" id="password" name="password" placeholder="Password" required>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
         <input type="text" id="bio" name="bio" placeholder="Bio" required>
         <input type="number" id="age" name="age" placeholder="Age" required>
-        <input type="file" id="profilePicture" name="profilePicture" accept="image/*" required>
+        <div class="form-group">
+          <label for="profile_picture">Profile Picture:</label>
+          <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
+        </div>
         <button type="submit" class="btn">Register</button>
       </form>
       <p>Already have an account? <a href="/login">Login here</a></p>
     </div>
   </div>
-
-  <script>
-    document.getElementById("register-group-form").addEventListener("submit", async function(event) {
-      event.preventDefault(); 
-
-      const formData = new FormData();
-      formData.append('name', document.getElementById("name").value);
-      formData.append('email', document.getElementById("email").value);
-      formData.append('password', document.getElementById("password").value);
-      formData.append('bio', document.getElementById("bio").value);
-      formData.append('age', document.getElementById("age").value);
-      formData.append('profilePicture', document.getElementById("profilePicture").files[0]);
-
-      try {
-        const response = await fetch('/register-group', {
-          method: 'POST',
-          body: formData
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          // Registration successful
-          alert(data.message); // Display success message
-          // Redirect to login page
-          window.location.href = '/login.html';
-        } else {
-          // Registration failed
-          alert(data.message); // Display error message
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again later.');
-      }
-    });
-  </script>
