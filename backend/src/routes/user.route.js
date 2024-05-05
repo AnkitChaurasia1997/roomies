@@ -45,11 +45,11 @@ router
     .post(setProfile)
 
 router
-    .route("/swipeRight/:userId")
+    .route("/swipeRight")
     .post(swipeRight)
 
 router
-    .route("/swipeLeft/:userId")
+    .route("/swipeLeft")
     .post(swipeLeft)
 
 router
