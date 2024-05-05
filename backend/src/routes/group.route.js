@@ -8,7 +8,7 @@ const router = Router();
 router
     .route("/register")
     .get(async (req, res) => {
-        res.render('register_group');
+        res.render('register_group', {isAuthenticated : req.user ? true : false });
     })
     .post(upload.fields([
         {
@@ -21,7 +21,7 @@ router
 router
     .route("/login")
     .get(async (req, res) => {
-        res.render('login_group');
+        res.render('login_group', {isAuthenticated : req.user ? true : false });
     })
     .post(loginUser)
 

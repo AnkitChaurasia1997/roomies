@@ -13,14 +13,16 @@
 <body>
         <nav>
             <div class="nav-logo">Roomies</div>
+            {{#if isAuthenticated}}
             <ul class="nav-links">
                 <li class="link"><a href="/explore">Explore</a></li>
                 <li class="link"><a href="/showMatchedUsers">Chats</a></li>
                 <li class="link"><a href="/preferences">See Based On Preference</a></li>
-                <li class="link"><a href="profile.html">Profile</a></li>
+                <li class="link"><a href="/api/v1/users/profile">Profile</a></li>
             </ul>
-            {{#if isLoggedIn}}
-                <button class="btn" id="loginBtn">Logout</button>
+            {{/if}}
+            {{#if isAuthenticated}}
+                <a href="/logout"><button class="btn">Logout</button></a>
             {{else}}
                 <a href="/login"><button class="btn">Login</button></a>
             {{/if}} 

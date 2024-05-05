@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken,swipeRight,swipeLeft, getProfilesForUser, getfilteredUsersList, getUserStatus } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken, getProfilesForUser, getfilteredUsersList, getUserStatus } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -21,7 +21,7 @@ router
 router
     .route("/login")
     .get((req, res) => {
-        res.render('login_user');
+        res.render('login_user', {isAuthenticated : req.user ? true : false });
     })
     .post(loginUser)
 
@@ -36,21 +36,30 @@ router
     .route("/refreshToken")
     .post(getNewRefreshToken);
 
-router
-    .route("/profile/:userId")
-    .get(getProfile)
 
 router
-    .route("/profile/:userId")
-    .post(setProfile)
+.route("/profile")
+.get(verifyJWT, (req, res) => {
+    console.log(req.user);
+    res.render('profile_user', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
+})
+.post(setProfile)
 
-router
-    .route("/swipeRight")
-    .post(swipeRight)
+// router
+//     .route("/profile/:userId")
+//     .get(getProfile)
 
-router
-    .route("/swipeLeft")
-    .post(swipeLeft)
+// router
+//     .route("/profile/:userId")
+//     .post(setProfile)
+
+// router
+//     .route("/swipeRight")
+//     .post(swipeRight)
+
+// router
+//     .route("/swipeLeft")
+//     .post(swipeLeft)
 
 router
     .route("/profiles/get/:userId")

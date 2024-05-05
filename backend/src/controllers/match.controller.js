@@ -11,7 +11,7 @@ export const matchedController = async (req, res) => {
       });
       const userObj = JSON.stringify(user);
 
-      return res.status(200).render('matchedUserList', { matchedUsers : matchedUsers, userObj : userObj });
+      return res.status(200).render('matchedUserList', { matchedUsers : matchedUsers, userObj : userObj, isAuthenticated : req.user ? true : false });
     //   .json(
     //     new ApiResponse(
     //       200,
