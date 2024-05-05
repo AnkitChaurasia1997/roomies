@@ -62,8 +62,8 @@ initSocketIO(server);
 
 
 //extra routes import
-import extraRouter from './routes/index.routre.js';
-app.use('/', extraRouter);
+import indexRouter from './routes/index.routre.js';
+app.use('/', indexRouter);
 
 
 //user routes import
