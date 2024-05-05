@@ -104,7 +104,11 @@ export const userSchema = new mongoose.Schema({
     is_online: {
         type : Boolean,
         default : false
-    }
+    },
+    rejects:[{
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 }, {timestamps : true});
 
 
