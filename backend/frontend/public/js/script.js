@@ -109,3 +109,14 @@ document.addEventListener("DOMContentLoaded", function() {
         window.location.href = "index.html"; 
     });
 });
+
+/*chat*/
+// Compile Handlebars template
+const source = document.getElementById("chat-message-template").innerHTML;
+const template = Handlebars.compile(source);
+
+// Render chat messages
+const context = { messages: chatData };
+const html = template(context);
+document.getElementById("chat-messages").innerHTML = html;
+
