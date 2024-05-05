@@ -1,14 +1,15 @@
 import mongoose from "mongoose";
+import { User } from "./user.model.js";
 
-const matchesSchema = new mongoose.Schema({
+const matchSchema = new mongoose.Schema({
     like : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref :'Match'
+        type: mongoose.Schema.Types.ObjectId,
+        ref : "User"
     },
-    likedBy : {
+    likedby : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Match'
+        ref : "User"
     }
 }, {timestamps : true})
 
-export const Match = mongoose.model('Match', matchesSchema);
+export const Match = mongoose.model("Match", matchSchema)
