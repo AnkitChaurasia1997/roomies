@@ -1,8 +1,9 @@
+import { Group } from "../models/group.model.js";
 import { User } from "../models/user.model.js";
 
 export const shuffleProfiles = async (profiles, username, currentUserId) => {
     // Get the current user's likes
-    const currentUser = await User.findById(currentUserId);
+    const currentUser = await User.findById(currentUserId) || await Group.findById(currentUserId);
     const likedUsers = currentUser.likes.map(like => like.toString());
     // const dislikedUsers = currentUser.rejects.map(reject => reject.toString());
     // const matchedUsers = currentUser.matches.map(match => match.toString());
@@ -30,7 +31,7 @@ export const exploreController = async(req, res) => {
         const profiles = await User.find().select("-password -refreshToken");
 
         const username = req.user.username || req.user.name;
-
+ 
         const filteredProfiles = await shuffleProfiles(profiles, username, req.user._id);
         // console.log(filteredProfiles);
         return res.render('explore', { profiles : filteredProfiles, userID : req.user._id, isAuthenticated : req.user ? true : false });

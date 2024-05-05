@@ -107,7 +107,7 @@ const groupSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref: "Group"
     }],
-    dislikes:[{
+    rejects:[{
         type : mongoose.Schema.Types.ObjectId,
         ref: "Group"
     }],
