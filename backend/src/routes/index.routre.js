@@ -2,6 +2,9 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { exploreController } from "../controllers/explore.controller.js";
 import { matchedController } from "../controllers/match.controller.js";
+import { checkPreferences } from "../middlewares/pref.middleware.js";
+import { preferenceController, showPreferencesForm, setPreferences } from "../controllers/preference.controller.js";
+
 
 const router  = Router();
 router
@@ -29,5 +32,17 @@ router
 router
     .route('/explore')
     .get(verifyJWT, exploreController);
+
+
+router
+    .route('/setPreferences')
+    .get(verifyJWT, showPreferencesForm)
+    .post(verifyJWT, setPreferences);
+
+
+router
+    .route('/preferences')
+    .get(verifyJWT,checkPreferences, preferenceController);
+
 
 export default router;
