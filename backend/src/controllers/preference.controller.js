@@ -1,3 +1,4 @@
+import { Group } from "../models/group.model.js";
 import { User } from "../models/user.model.js";
 
 
@@ -5,11 +6,12 @@ import { User } from "../models/user.model.js";
 export const preferenceController = async(req, res) => {
     try {
         const userId = req.user._id;
-        const user = await User.findById(userId).populate('preferences');
+        const user = await User.findById(userId).populate('preferences') || await Group.findById(userId).populate('preferences');
         const preferences = user.preferences;
 
         // Get all users
-        const allUsers = await User.find().select("-password -refreshToken");
+        const allUsers = await User.find().select("-password -refreshToken") 
+       // || await Group.find().select("-password -refreshToken");
 
         // Filter users based on preferences
         const filteredUsers = allUsers.filter(otherUser => {
@@ -67,8 +69,12 @@ export const showPreferencesForm = async(req, res) => {
 export const setPreferences = async(req, res) => {
     const userId = req.user._id;
     const preferences = req.body;
-
-    await User.findByIdAndUpdate(userId, { $set: { preferences } }, { new: true });
-
+  
+    if (req.user.members) {
+      await Group.findByIdAndUpdate(userId, { $set: { preferences } }, { new: true });
+    } else {
+      await User.findByIdAndUpdate(userId, { $set: { preferences } }, { new: true });
+    }
+  
     return res.redirect('/preferences');
-};
+  };
