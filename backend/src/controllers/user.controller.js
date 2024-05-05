@@ -448,7 +448,7 @@ export const loginUser = async(req, res) => {
             }
 
             let checkingpreference = await User.findOne(
-                { _id: userId , 
+                { _id: user._id , 
                 'preferences.budget': { $ne: null }});
 
             return res
@@ -494,8 +494,7 @@ export const logoutUser = async(req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {} , "User logged out successfully"));
-
+    .redirect('/index')
 };
 
 
@@ -557,7 +556,7 @@ export const getLikedUsers = async (req, res) => {
       });
       const userObj = JSON.stringify(user);
 
-      return res.status(200).render('likedUserList', { likedUsers : likedUsers, userObj : userObj });
+      return res.status(200).render('likedUserList', { likedUsers : likedUsers, userObj : userObj, isAuthenticated : req.user ? true : false });
     //   .json(
     //     new ApiResponse(
     //       200,
