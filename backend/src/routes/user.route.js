@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken,swipeRight,swipeLeft, getProfilesForUser, getfilteredUsersList, getLikedUsers, getUserStatus } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken,swipeRight,swipeLeft, getProfilesForUser, getfilteredUsersList, getUserStatus } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -60,9 +60,9 @@ router
     .route("/filter/:userId")
     .get(getfilteredUsersList)
 
-router
-    .route('/getLikedUsers')
-    .get(verifyJWT, getLikedUsers)
+// router
+//     .route('/getLikedUsers')
+//     .get(verifyJWT, getLikedUsers)
 
 router
     .route('/getUserStatus/:userId')
