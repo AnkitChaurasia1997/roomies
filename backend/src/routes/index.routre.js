@@ -23,8 +23,8 @@ router
     })
 
 router
-    .route('/chat')
-    .get(verifyJWT, chatController)
+    .route('/showMatchedUsers')
+    .get(verifyJWT, matchedController)
 
 router
     .route('/explore')
