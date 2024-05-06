@@ -80,18 +80,30 @@ export const userSchema = new mongoose.Schema({
         type: String,
         required : [true, "Profile picture is required"],
     },
-    likes:[{
-        type : mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    dislikes:[{
-        type : mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
-    matches:[{
-        type : mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }],
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'likesType'
+      }],
+      matches: [{
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'matchesType'
+      }],
+      rejects: [{
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'rejectsType'
+      }],
+      likesType: {
+        type: String,
+        enum: ['User', 'Group']
+      },
+      matchesType: {
+        type: String,
+        enum: ['User', 'Group']
+      },
+      rejectsType: {
+        type: String,
+        enum: ['User', 'Group']
+      },
     password : {
         type : String,
         required : [true, 'Password is required']
@@ -105,11 +117,7 @@ export const userSchema = new mongoose.Schema({
     is_online: {
         type : Boolean,
         default : false
-    },
-    rejects:[{
-        type : mongoose.Schema.Types.ObjectId,
-        ref: "User"
-    }]
+    }
 }, {timestamps : true});
 
 

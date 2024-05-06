@@ -105,19 +105,23 @@ const groupSchema = new mongoose.Schema({
     },
     likes:[{
         type : mongoose.Schema.Types.ObjectId,
-        ref: "Group"
+        ref: "User"
     }],
     rejects:[{
         type : mongoose.Schema.Types.ObjectId,
-        ref: "Group"
+        ref: "User"
     }],
     matches:[{
         type : mongoose.Schema.Types.ObjectId,
-        ref: "Group"
+        ref: "User"
     }],
     refreshToken : {
         type: String
-    }
+    },
+    is_online: {
+        type : Boolean,
+        default : false
+    },
 }, {timestamps : true});
 
 

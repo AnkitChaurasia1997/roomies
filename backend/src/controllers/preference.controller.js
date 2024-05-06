@@ -1,64 +1,58 @@
 import { Group } from "../models/group.model.js";
 import { User } from "../models/user.model.js";
 
+function extractPreferences(preferences) {
+    const extractedPreferences = {};
+    Object.keys(preferences).forEach((key) => {
+      if (preferences[key] !== null && preferences[key] !== undefined && preferences[key] !== '' && (Array.isArray(preferences[key]) ? preferences[key].length > 0 : true)) {
+        extractedPreferences[key] = preferences[key];
+      }
+    });
+    return extractedPreferences;
+  }
 
-
-export const preferenceController = async(req, res) => {
+  export const preferenceController = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const user = await User.findById(userId).populate('preferences').lean() || await Group.findById(userId).populate('preferences').lean();
-        const preferences = user.preferences;
-
-        // Get all users
-        const allUsers = await User.find().select("-password -refreshToken").lean()
-       || await Group.find().select("-password -refreshToken").lean();
-
-        // Filter users based on preferences
-        const filteredUsers = allUsers.filter(otherUser => {
-            // Don't show the user themselves
-            if (otherUser._id.toString() === userId.toString()) {
-                return false;
-            }
-
-            // Check age range
-            if (preferences.ages_between && (otherUser.age < preferences.ages_between[0] || otherUser.age > preferences.ages_between[1])) {
-                return false;
-            }
-
-            // Check food choices
-            if (preferences.food_choices && otherUser.preferences && otherUser.preferences.food_choices !== preferences.food_choices) {
-                return false;
-            }
-
-            // Check profession
-            if (preferences.profession && otherUser.preferences && otherUser.preferences.profession !== preferences.profession) {
-                return false;
-            }
-
-            // Check lifestyle preferences
-            if (preferences.lifestyle_preferences && otherUser.preferences && !otherUser.preferences.lifestyle_preferences.includes(preferences.lifestyle_preferences)) {
-                return false;
-            }
-
-            // Check budget
-            if (preferences.budget && otherUser.preferences && otherUser.preferences.budget > preferences.budget) {
-                return false;
-            }
-
-            // Check if the user has liked, disliked, or matched the other user
-            if (user.likes.includes(otherUser._id) || user.rejects.includes(otherUser._id) || user.matches.includes(otherUser._id)) {
-                return false;
-            }
-
-            return true;
-        });
-
-        return res.render('explore', { profiles: filteredUsers, userID: req.user._id, layout: 'main',  user : req.user || {}, isAuthenticated : req.user ? true : false  });
+      const userId = req.user._id;
+      const user = await User.findById(userId).populate('preferences').lean() || await Group.findById(userId).populate('preferences').lean();
+      const preferences = user.preferences;
+      console.log("User Preferences")
+      console.log(preferences);
+  
+      // Get all users
+      const allUsers = await User.find().select("-password -refreshToken").lean() || await Group.find().select("-password -refreshToken").lean();
+  
+      // Extract non-empty preferences
+      const extractedPreferences = extractPreferences(preferences);
+  
+      // Filter users based on extracted preferences
+      const filteredUsers = allUsers.filter(otherUser => {
+        // Don't show the user themselves
+        if (otherUser._id.toString() === userId.toString()) {
+          return false;
+        }
+  
+        // Filter users based on extracted preferences
+        for (const key in extractedPreferences) {
+          if (otherUser.preferences && otherUser.preferences[key] && extractedPreferences[key] !== otherUser.preferences[key]) {
+            return false;
+          }
+        }
+  
+        // Check if the user has liked, disliked, or matched the other user
+        if (user.likes && user.likes.includes(otherUser._id) || user.rejects && user.rejects.includes(otherUser._id) || user.matches && user.matches.includes(otherUser._id)) {
+            return false;
+          }
+  
+        return true;
+      });
+  
+      return res.render('explore', { profiles: filteredUsers, userID: req.user._id, layout: 'main', user: req.user || {}, isAuthenticated: req.user ? true : false });
     } catch (error) {
-        console.error(error);
-        return res.status(500).send('Error occurred while fetching profiles');
+      console.error(error);
+      return res.status(500).send('Error occurred while fetching profiles');
     }
-};
+  };
 
 
 export const showPreferencesForm = async(req, res) => {

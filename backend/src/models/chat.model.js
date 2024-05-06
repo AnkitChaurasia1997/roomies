@@ -1,38 +1,33 @@
 import mongoose from "mongoose";
 
 
-const options = {
-    discriminatorKey: 'kind',
-    _id: false
-  };
   
   const chatSchema = new mongoose.Schema({
     sender_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: 'sender_id_type'
+      refPath: 'senderType'
     },
-    sender_id_type: {
+    senderType: {
       type: String,
-      required: true,
+      // required: true,
       enum: ['User', 'Group']
     },
     receiver_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      refPath: 'receiver_id_type'
+      refPath: 'receiverType'
     },
-    receiver_id_type: {
+    receiverType: {
       type: String,
-      required: true,
+      // required: true,
       enum: ['User', 'Group']
     },
     message: {
       type: String,
       required: true
     }
-  }, { timestamps: true, ...options });
-
+  }, { timestamps: true} );
 
 
 export const Chat = mongoose.model('Chat', chatSchema);
