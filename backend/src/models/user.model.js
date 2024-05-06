@@ -50,25 +50,59 @@ export const userSchema = new mongoose.Schema({
         lowercase : true,
         trim : true,
         index : true,
-        lowercase : true
+        match: /^[a-zA-Z]{5,10}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z]+$/.test(value); // No numbers
+            },
+            message: 'Invalid username (5-10 characters, no numbers)'
+        }
     },
     email : {
         type : String,
         required : [true, "email can't be empty!"],
         unique : true,
         trim : true,
+        match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+            },
+            message: 'Invalid email address'
+        }
     },
     firstName : {
         type : String,
         required : [true, "first name can't be empty!"],
         index : true,
+        match: /^[a-zA-Z]{2,25}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z]+$/.test(value); // No numbers
+            },
+            message: 'Invalid first name (2-25 characters, no numbers)'
+        }
     },
     lastName : {
         type : String,
-        required : [true, "last name can't be empty!"]
+        required : [true, "last name can't be empty!"],
+        match: /^[a-zA-Z]{2,25}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z]+$/.test(value); // No numbers
+            },
+            message: 'Invalid last name (2-25 characters, no numbers)'
+        }
     },
     bio : {
-        type : String
+        type : String,
+        maxlength: 500,
+        validate: {
+            validator: function(value) {
+                return value.length <= 500;
+            },
+            message: 'Bio cannot exceed 500 characters'
+        }
     },
     age:{
         type: Number,
@@ -106,7 +140,13 @@ export const userSchema = new mongoose.Schema({
       },
     password : {
         type : String,
-        required : [true, 'Password is required']
+        required : [true, 'Password is required'],
+        validate: {
+            validator: function(value) {
+                return /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/.test(value);
+            },
+            message: 'Invalid password (at least 8 characters with uppercase, number, special character)'
+        }
     },
     preferences : {
         type : preferencesSchema

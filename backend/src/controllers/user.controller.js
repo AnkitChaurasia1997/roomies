@@ -6,6 +6,7 @@ import { isObjectValid } from "../utils/Validator.js";
 import uploadOnCDN from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import * as helper from "../utils/Validator.js";
 import mongoose from "mongoose";
 
 
@@ -33,17 +34,27 @@ const generateAccessAndRefreshToken = async(userID) => {
 export const registerUser = async(req, res) => {
 
     const userDetails = req.body; 
-    if(!isObjectValid(userDetails)){
-        throw new ApiError(400, "All fields are required.");
+    if(!userDetails.username || !userDetails.email || !userDetails.firstName || !userDetails.lastName || !userDetails.bio || !userDetails.age || !userDetails.password || !userDetails.confirmPassword){
+        return res.status(400).render('register_user',{error:"All fields are required.",username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
     }
-    const {username, email, firstName, lastName, bio, age, password} = userDetails;
+    if(userDetails.password!==userDetails.confirmPassword){
+        return res.status(400).render('register_user',{error:"Password do not match",username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
+    }
 
+
+    if(!isObjectValid(userDetails)){
+        res.status(400).render('register_user',{error:"All fields are required.",username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
+       // throw new ApiError(400, "All fields are required.");
+    }
+    const {
+        username, email, firstName, lastName, bio, age, password} = userDetails;
     const existingUser = await User.findOne({
         $or: [{username}, {email}]
     });
 
     if(existingUser){
-        throw new ApiError(409, "User with email or username already exists.");
+        return res.status(400).render('register_user',{error:"User with email or username already exists.", username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
+       // throw new ApiError(409, "User with email or username already exists.");
     }
 
     //multer keeps the file in the temp folder and returns us the file path
@@ -51,18 +62,32 @@ export const registerUser = async(req, res) => {
 
 
 //---------------------------------------------------------------------------------//
+if (!req.files || !req.files.profile_picture || !req.files.profile_picture[0]) {
+    return res.status(400).render('register_user',{error:"No Image uploaded", username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
+
+}
+
+const image = req.files.profile_picture[0];
+
+if (!image.mimetype.startsWith('image/')) {
+    return res.status(400).render('register_user',{error:"Only Images allowed in profile Pic", username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
+
+}   
+
     const profile_picture_localPath = req.files.profile_picture[0].path;
     if(!profile_picture_localPath){
-        throw new ApiError(400, "Profile Picture is required");
+        return res.status(400).render('register_user',{error:"Profile Pic Required.", username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
+
     }
 
     const profile_picture = await uploadOnCDN(profile_picture_localPath);
 
     if(!profile_picture){
-        throw new ApiError(400, "Profile Picture is required");
+        return res.status(400).render('register_user',{error:"Profile Pic Required.", username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
     }
     
 //-------------------------------------------------------------------------------//
+try {
     const user = await User.create({
         username,
         email,
@@ -73,7 +98,7 @@ export const registerUser = async(req, res) => {
         age,
         password
     });
-
+    // Continue with success logic if user creation succeeds
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     );
@@ -83,6 +108,21 @@ export const registerUser = async(req, res) => {
     }
 
     res.redirect('/api/v1/users/login');
+
+} catch (err) {
+    // Handle the error here
+    return res.status(400).render('register_user', {
+        error: err.message,
+        username: userDetails.username,
+        email: userDetails.email,
+        firstName: userDetails.firstName,
+        lastName: userDetails.lastName,
+        bio: userDetails.bio,
+        age: userDetails.age
+    });
+}
+
+   
 }
 
 export const getProfile = async(req, res) => {
@@ -424,17 +464,18 @@ export const loginUser = async(req, res) => {
         const { username, password } = req.body;
 
         if(!username){
-            throw new ApiError(400, "Username Required")
+            return res.status(400).render('login_user',{error:"Username Required"});
+  
         }
 
         if(!password){
-            throw new ApiError(400, "Password Required")
+            return res.status(400).render('login_user',{error:"Password Required"});
         }
 
         const user = await User.findOne({username});
 
         if(!user){
-            throw new ApiError(404, "User does not exist");
+            return res.status(400).render('login_user',{error:"User does not exist"});
 
         }
 
@@ -442,7 +483,7 @@ export const loginUser = async(req, res) => {
         const isPasswordValid = await user.isPasswordCorrect(password);
 
         if(!isPasswordValid){
-                throw new ApiError(401, "Invalid Credentials");
+            return res.status(400).render('login_user',{error:"Invalid Credentials"});
         }
 
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
@@ -465,18 +506,9 @@ export const loginUser = async(req, res) => {
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .redirect('/explore')
-            // .json(
-            //     new ApiResponse(
-            //         200,
-            //         {
-            //             user: loggedInUser, accessToken, refreshToken
-            //         },
-            //         'User logged in successfully'
-            //     )
-            // )
 
         } catch(e) {
-            throw new ApiError(500, "Internal Server Error");
+            return res.status(500).render('login_user',{error:"Internal Server Error"});
     }
 }
 
