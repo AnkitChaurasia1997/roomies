@@ -38,8 +38,12 @@ router
 router
 .route("/profile")
 .get(verifyJWT, (req, res) => {
-    // console.log(req.user);
-    res.render('profile_user', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
+    console.log(req.user);
+    if(req.user && req.user.name) {
+        res.render('profile_group', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
+    } else {
+        res.render('profile_user', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
+    }
 })
 
 router

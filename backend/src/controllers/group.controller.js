@@ -14,7 +14,25 @@ export const registerGroup = async(req, res) => {
         if(!isObjectValid(groupDetails)){
             throw new ApiError(400, "All fields are required.");
         }
-        const {name, email, password, bio, age} = groupDetails;
+        const {name, email, password, bio, age, memberGender0, memberGender1, memberGender2, memberGender3} = groupDetails;
+        let firstName = groupDetails.firstName;
+        let lastName = groupDetails.lastName;
+        let memberAge = groupDetails.memberAge;
+        let memberEmail = groupDetails.memberEmail;
+        let gender = [];
+        
+        if(memberGender0) {
+            gender.push(memberGender0);
+        }
+        if(memberGender1) {
+            gender.push(memberGender1);
+        }
+        if(memberGender2) {
+            gender.push(memberGender2);
+        }
+        if(memberGender3) {
+            gender.push(memberGender3);
+        }
 
         const existingGroup = await Group.findOne({
             email
@@ -36,6 +54,23 @@ export const registerGroup = async(req, res) => {
         if(!profile_picture){
             throw new ApiError(400, "Profile Picture is required");
         }
+
+        let members = [];
+
+        let memberGender = "memberGender";
+        let dynamicGender = {};
+
+        for (let i = 0; i < firstName.length; i++) {
+            let member = {
+                firstName: firstName[i],
+                lastName: lastName[i],
+                age: memberAge[i],
+                email: memberEmail[i],
+                gender: gender[i]
+            };
+
+        members.push(member);
+        }
         
         const group = await Group.create({
             name,
@@ -43,7 +78,8 @@ export const registerGroup = async(req, res) => {
             password,
             profile_picture : profile_picture.url,
             bio,
-            age
+            age, 
+            members
         });
 
         const createdGroup = await Group.findById(group._id).select(

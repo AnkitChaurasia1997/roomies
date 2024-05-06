@@ -7,7 +7,7 @@ export const routeCheck = async(req, res, next) => {
         const token = req.cookies?.accessToken || req.header("Authorization")?.("Bearer", "")
     
         
-        if(!token){
+        if(!token && req.originalUrl !== '/login'){
             return res.redirect('/login');
         }
 

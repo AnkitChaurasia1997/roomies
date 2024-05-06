@@ -1,22 +1,98 @@
-
-  <div id="body-register" class="container-register">
-    <div class="form-register">
-      <h1>Register Group</h1>
-      <form id="register-group-form" action="/api/v1/groups/register" method="POST" enctype="multipart/form-data">
-        <input type="text" id="name" name="name" placeholder="Group Name" required>
-        <input type="email" id="email" name="email" placeholder="Email" required>
-        <input type="password" id="password" name="password" placeholder="Password" required>
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
-        <input type="text" id="bio" name="bio" placeholder="Bio" required>
-        <input type="number" id="age" name="age" placeholder="Age" required>
-        <div class="form-group">
-          <label for="profile_picture">Profile Picture:</label>
-          <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
-        </div>
-        <button type="button" id="add-member-btn" class="btn">Add Member</button>
-        <button type="submit" class="btn">Register</button>
-      </form>
-      <p>Already have an account? <a href="/login">Login here</a></p>
-    </div>
+<div id="body-register" class="container-register">
+  <div class="form-register">
+    <h1>Register Group</h1>
+    <form id="register-group-form" action="/api/v1/groups/register" method="POST" enctype="multipart/form-data">
+      <input type="text" id="name" name="name" placeholder="Group Name" required>
+      <input type="email" id="email" name="email" placeholder="Email" required>
+      <input type="password" id="password" name="password" placeholder="Password" required>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+      <p>You can now add up to 4 members to your group.</p>
+      <div id="members-container">
+        <!-- Member fields will be dynamically added here -->
+      </div>
+      <input type="text" id="bio" name="bio" placeholder="Bio" required>
+      <input type="number" id="age" name="age" placeholder="Age" required>
+      <div class="form-group">
+        <label for="profile_picture">Profile Picture:</label>
+        <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
+      </div>
+      <button type="button" id="add-member-btn" class="btn">Add Member</button>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login here</a></p>
   </div>
-  <script src="/js/register_group.js"></script>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  const addMemberBtn = document.getElementById("add-member-btn");
+  const membersContainer = document.getElementById("members-container");
+  const maxMembers = 4; // Maximum number of members allowed
+  const members = []; // Initialize empty array to store member data
+
+  addMemberBtn.addEventListener("click", function() {
+    if (members.length < maxMembers) {
+      const memberDiv = document.createElement("div");
+      memberDiv.classList.add("member-fields");
+
+      memberDiv.innerHTML = `
+        <p>Member ${members.length + 1}:</p>
+        <div class="member-data">
+          <input name="firstName" placeholder="First Name">
+          <input name="lastName" placeholder="Last Name">
+          <input name="memberAge" placeholder="Age">
+          <input name="memberEmail" placeholder="Email">
+          <label>Gender:</label>
+          <div class="memberGender-group${members.length}">
+            <input type="radio" name="memberGender${members.length}" value="male">
+            <label>Male</label>
+            <input type="radio" name="memberGender${members.length}" value="female">
+            <label>Female</label>
+            <input type="radio" name="memberGender${members.length}" value="others">
+            <label>Others</label>
+          </div>
+        </div>
+      `;
+      members.push(1);
+
+      membersContainer.appendChild(memberDiv);
+
+
+
+      //memberDiv.innerHTML = `
+        //<p>Member ${members.length + 1}:</p>
+        //<div class="form-group">
+         // <input name="firstName" placeholder="First Name">
+          //<input name="lastName" placeholder="Last Name">
+          //<input name="age" placeholder="Age">
+          //<input name="email" placeholder="Email">
+          //<label>Gender:</label>
+          //<div class="form-group">
+           // <input type="radio" name="gender" value="male">
+            //<label>Male</label>
+            //<input type="radio" name="gender" value="female">
+            //<label>Female</label>
+            //<input type="radio" name="gender" value="others">
+            //<label>Others</label>
+         // </div>
+        //</div>
+      //`;
+
+      // Get the member fields
+//      const memberFields = memberDiv.querySelectorAll('input, select');
+
+      // Add event listener to each field to update the members array
+  //    memberFields.forEach((field) => {
+    //    field.addEventListener("input", () => {
+      //    const memberData = {};
+        //  memberFields.forEach((field) => {
+           //memberData[field.name.replace(/members\[(\d+)\]/, 'members[$1]')] = field.value;
+          //});
+          //members[members.length - 1] = memberData;
+        //});
+      //});
+    } else {
+      alert("You can only add up to 4 members.");
+    }
+  });
+});
+</script>
