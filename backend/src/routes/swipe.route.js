@@ -1,15 +1,16 @@
 import { Router } from "express"
 import { matchingLogic, rejectionLogic } from "../controllers/swipe.controller.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const router = Router();
 
 router
     .route('/swipeRight')
-    .post(matchingLogic)
+    .post(verifyJWT, matchingLogic)
 
 router
     .route('/swipeLeft')
-    .post(rejectionLogic)
+    .post(verifyJWT, rejectionLogic)
 
 export default router;
