@@ -5,6 +5,7 @@ import { matchedController } from "../controllers/match.controller.js";
 import { checkPreferences } from "../middlewares/pref.middleware.js";
 import { logoutUser } from "../controllers/user.controller.js";
 import { preferenceController, showPreferencesForm, setPreferences } from "../controllers/preference.controller.js";
+import { routeCheck } from "../middlewares/authRoute.middleware.js";
 
 
 const router  = Router();
@@ -16,7 +17,7 @@ router
 
 router
     .route('/login')
-    .get((req, res) => {
+    .get(routeCheck, (req, res) => {
         res.render('login_selector', {isAuthenticated : req.user ? true : false });
     })
 
@@ -37,13 +38,13 @@ router
 router
 .route("/profile")
 .get(verifyJWT, (req, res) => {
-    console.log(req.user);
+    // console.log(req.user);
     res.render('profile_user', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
 })
 
 router
     .route('/explore')
-    .get(verifyJWT, exploreController);
+    .get(routeCheck, verifyJWT ,exploreController);
 
 
 router

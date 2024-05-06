@@ -1,11 +1,11 @@
 <main>
-  <h1 class="h1-mached">Mached Users</h1>
+  <h1>Matched Users</h1>
   <div class="sidebar">
     {{#each matchedUsers}}
-    <div class="user-mached">
-      <span class="status-mached {{#if _doc.is_online}}online{{else}}offline{{/if}}" data-user-id="{{_doc._id}}"></span>
-      <a href="#" class="username-mached" data-user-id="{{_doc._id}}" onclick="showChatWindow('{{_doc._id}}', '{{_doc.firstName}}')">
-        {{_doc.firstName}}
+    <div class="user">
+      <span class="status {{#if is_online}}online{{else}}offline{{/if}}" data-user-id="{{_id}}"></span>
+      <a href="#" class="username" data-user-id="{{_id}}" onclick="showChatWindow('{{_id}}', '{{username}}')">
+        {{username}}
       </a>
     </div>
     {{/each}}
@@ -23,14 +23,11 @@
 
 
   <script>
-
     function scrollChat() {
       const chatMessages = document.querySelector('.chat-messages');
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-
-
-    const userObj = JSON.parse('{{{ userObj }}}');
+    const userObj = {{{userObj}}};
     console.log(userObj);
     const senderID = userObj._id;
     const socket = io('/user-namespace', {
@@ -39,7 +36,6 @@
       }
     });
     let receiverID;
-
     socket.on('getOnlineUser', function(data) {
       console.log("online");
       const statusElement = document.querySelector(`.status[data-user-id="${data.user_id}"]`);
@@ -48,7 +44,6 @@
         statusElement.classList.add('online');
       }
     });
-
     socket.on('getOfflineUser', function(data) {
       console.log("offline");
       const statusElement = document.querySelector(`.status[data-user-id="${data.user_id}"]`);
@@ -57,8 +52,6 @@
         statusElement.classList.add('offline');
       }
     });
-
-
     socket.on('loadNewChat', function(data){
       console.log(data);
       if(senderID === data.receiver_id && receiverID == data.sender_id){
@@ -72,7 +65,6 @@
         scrollChat();
       }
       });
-
     function showChatWindow(userId, username) {
       // Get the chat window
       const chatWindow = document.querySelector('.chat-window');
@@ -87,7 +79,6 @@
         chatWindow.dataset.userId = userId;
         document.getElementById('chat-username').innerText = username;
         receiverID = userId; 
-
         //firing a socket event
         socket.emit('existsChat', {
           sender_id : senderID,
@@ -95,10 +86,8 @@
         })
       }
     }
-
     const sendMessageBtn = document.getElementById('send-message-btn');
     const messageInput = document.getElementById('message-input');
-
     sendMessageBtn.addEventListener('click', async (event) => {
     event.preventDefault(); // prevent default form submission behavior
     const message = messageInput.value.trim();
@@ -125,13 +114,11 @@
               <h5>`+chat+`</h5>
           </div>`;
           messageInput.value = ''; // clear the message input box
-
           //append the html in chat container
           //append the html in chat container
           const chatMessages = document.querySelector('.chat-messages');
           chatMessages.insertAdjacentHTML('beforeend', html);
           scrollChat();
-
           socket.emit('newChat', result.data);
         }
       } catch (error) {
@@ -139,43 +126,33 @@
         }
       }
     });
-
     function clearChatMessages() {
       const chatMessages = document.querySelector('.chat-messages');
       chatMessages.innerHTML = ''; // Clear the chat messages
     }
-
     //load old chats
     socket.on('loadChats', function(data) {
       const chats = data.chats;
       const chatMessages = document.querySelector('.chat-messages');
-
       let html = '';
-
       chats.forEach(chat => {
         let addClass = '';
-
         if (chat.sender_id === senderID) {
           addClass = 'current-user-chat';
         } else {
           addClass = 'distance-user-chat';
         }
-
         html += `
           <div class="${addClass}">
             <h5>${chat.message}</h5>
           </div>
         `;
       });
-
       // Append the HTML to the .chat-messages container
       chatMessages.insertAdjacentHTML('beforeend', html);
       scrollChat();
-
       
   });
   
-
-
   </script>
 </main>

@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { User } from "../models/user.model.js";
 import { Chat } from "../models/chat.model.js";
+import { Group } from "../models/group.model.js";
 
 
 const initSocketIO = (server) => {
@@ -12,21 +13,20 @@ const initSocketIO = (server) => {
         console.log('User connected');
         console.log(socket.handshake.auth.token);
         const userID = socket.handshake.auth.token
-
-        await User.findByIdAndUpdate(
-            {_id: userID},
-            {$set : { is_online : true }}
-        )
+        let groupID = null;
+        if (!(await User.findByIdAndUpdate({_id: userID}, {$set: {is_online: true}}))) {
+            groupID = socket.handshake.auth.token;
+            await Group.findByIdAndUpdate({_id: groupID}, {$set: {is_online: true}});
+          }
 
         socket.broadcast.emit('getOnlineUser', { user_id : userID});
 
         socket.on('disconnect', async function(){
             console.log('user disconnected')
 
-            await User.findByIdAndUpdate(
-                {_id: userID},
-                {$set : { is_online : false }}
-            )
+            if (!(await User.findByIdAndUpdate({_id: userID}, {$set: {is_online: false}}))) {
+                await Group.findByIdAndUpdate({_id: groupID}, {$set: {is_online: false}});
+              }
 
             socket.broadcast.emit('getOfflineUser', { user_id : userID});
 

@@ -26,18 +26,21 @@ export const matchingLogic = async(req, res) => {
         // if ankit has already liked Ritik -- > then match;
         const isLiked = await checkIfLiked(like, likedby);
 
+        
+
         if (isLiked){
-            if(!req.user.members){
+            if (!req.user.members) {
+                await User.findByIdAndUpdate(likedby, { $push: { matches: like } });
+                const userUpdateResult = await User.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } });
+                if (!userUpdateResult) {
+                  await Group.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } });
+                }
+              } else {
                 await Promise.all([
-                    User.findByIdAndUpdate(likedby, { $push: { matches: like } }),
-                    User.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } }),
-                  ]);
-            }else{
-                await Promise.all([
-                    Group.findByIdAndUpdate(likedby, { $push: { matches: like } }),
-                    Group.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } }),
-                  ]);
-            }
+                  Group.findByIdAndUpdate(likedby, { $push: { matches: like } }),
+                  User.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } }),
+                ]);
+              }
             return res.status(200).json(
                 new ApiResponse(
                 200,

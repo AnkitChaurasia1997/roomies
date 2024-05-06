@@ -43,19 +43,19 @@ export const exploreController = async (req, res) => {
     let profiles;
     if (!req.user.members) {
       const users = await User.find().select("-password -refreshToken").lean();
-      console.log(users[0])
+      // console.log(users[0])
       const groups = await Group.find().lean();
       const modifiedGroups = groups.map(group => ({ ...group, username: group.name }));
-      console.log(modifiedGroups[0])
+      // console.log(modifiedGroups[0])
       profiles = [...users, ...modifiedGroups]; // concatenate the results
-      console.log(profiles.length)
+      // console.log(profiles.length)
     } else {
       profiles = await User.find().select("-password -refreshToken").lean();
     }
 
     const username = req.user.username || req.user.name;
     const filteredProfiles = await shuffleProfiles(profiles, username, req.user._id);
-    console.log(filteredProfiles.length);
+    // console.log(filteredProfiles.length);
     return res.render('explore', { profiles: filteredProfiles, userID: req.user._id , isAuthenticated : req.user ? true : false});
   } catch (error) {
     console.error(error);

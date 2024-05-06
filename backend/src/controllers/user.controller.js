@@ -420,7 +420,7 @@ export const loginUser = async(req, res) => {
 
     try{
 
-        console.log(req);
+        // console.log(req);
         const { username, password } = req.body;
 
         if(!username){
