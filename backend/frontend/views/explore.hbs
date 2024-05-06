@@ -1,13 +1,13 @@
 <div class="profile-container">
     {{#each profiles}}
-        <div class="exp-pro-card" data-user-id="{{_doc._id}}">
+        <div class="exp-pro-card" data-user-id="{{_id}}">
             <div class="exp-img">
-            <img src="{{_doc.profile_picture}}" alt="" class="exp-pro-img">
+            <img src="{{profile_picture}}" alt="" class="exp-pro-img">
             </div>
             <div class="exp-pro-text-data">
                 {{log this}}
-            <span class="exp-name">{{_doc.username}}</span>
-            <span class="exp-job">{{_doc.preferences.profession}}</span>
+            <span class="exp-name">{{username}}</span>
+            <span class="exp-job">{{preferences.profession}}</span>
             <br>
             <br>
             </div>

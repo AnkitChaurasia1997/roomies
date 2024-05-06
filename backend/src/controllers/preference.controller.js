@@ -6,12 +6,12 @@ import { User } from "../models/user.model.js";
 export const preferenceController = async(req, res) => {
     try {
         const userId = req.user._id;
-        const user = await User.findById(userId).populate('preferences') || await Group.findById(userId).populate('preferences');
+        const user = await User.findById(userId).populate('preferences').lean() || await Group.findById(userId).populate('preferences').lean();
         const preferences = user.preferences;
 
         // Get all users
-        const allUsers = await User.find().select("-password -refreshToken") 
-       // || await Group.find().select("-password -refreshToken");
+        const allUsers = await User.find().select("-password -refreshToken").lean()
+       || await Group.find().select("-password -refreshToken").lean();
 
         // Filter users based on preferences
         const filteredUsers = allUsers.filter(otherUser => {
