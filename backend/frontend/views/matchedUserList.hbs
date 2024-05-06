@@ -1,10 +1,10 @@
 <main>
-  <h1>Matched Users</h1>
+  <h1 class="h1-mached">Mached Users</h1>
   <div class="sidebar">
     {{#each matchedUsers}}
-    <div class="user">
-      <span class="status {{#if _doc.is_online}}online{{else}}offline{{/if}}" data-user-id="{{_doc._id}}"></span>
-      <a href="#" class="username" data-user-id="{{_doc._id}}" onclick="showChatWindow('{{_doc._id}}', '{{_doc.firstName}}')">
+    <div class="user-mached">
+      <span class="status-mached {{#if _doc.is_online}}online{{else}}offline{{/if}}" data-user-id="{{_doc._id}}"></span>
+      <a href="#" class="username-mached" data-user-id="{{_doc._id}}" onclick="showChatWindow('{{_doc._id}}', '{{_doc.firstName}}')">
         {{_doc.firstName}}
       </a>
     </div>
