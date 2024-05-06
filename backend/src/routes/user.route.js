@@ -39,11 +39,7 @@ router
 
 router
 .route("/profile")
-.get(verifyJWT, (req, res) => {
-    console.log(req.user);
-    res.render('profile_user', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
-})
-.post(setProfile)
+.post(verifyJWT, setProfile)
 
 // router
 //     .route("/profile/:userId")

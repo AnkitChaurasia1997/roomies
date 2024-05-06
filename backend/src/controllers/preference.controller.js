@@ -53,7 +53,7 @@ export const preferenceController = async(req, res) => {
             return true;
         });
 
-        return res.render('explore', { profiles: filteredUsers, userID: req.user._id, layout: 'main' });
+        return res.render('explore', { profiles: filteredUsers, userID: req.user._id, layout: 'main',  user : req.user || {}, isAuthenticated : req.user ? true : false  });
     } catch (error) {
         console.error(error);
         return res.status(500).send('Error occurred while fetching profiles');

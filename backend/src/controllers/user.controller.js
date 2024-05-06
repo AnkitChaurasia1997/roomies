@@ -105,14 +105,23 @@ export const getProfile = async(req, res) => {
 
 export const setProfile = async(req, res) => {
 
-    const userId = req.params.userId; 
+    const userId = req.user._id; 
     if(!userId){
         throw new ApiError(400, "userId Required")
     }
     
     const userDetails = req.body;
-    const {username, email, firstName, lastName, bio, age, looking_forBHK, zipcode, food_choices, profession, ages_between, budget, lifestyle_preferences, looking_for_accommodation} = userDetails;
+    let {username, email, firstName, lastName, bio, age, looking_forBHK, zipcode, food_choices, profession, ages_between, budget, lifestyle_preferences, looking_for_accommodation} = userDetails;
 
+    if(Array.isArray(food_choices)) {
+        if(food_choices[0]) {
+            food_choices = food_choices[0];
+        } else if(food_choices[1]) {
+            food_choices = food_choices[1];
+        } else {
+            food_choices = '';
+        }
+    }
     const user = await User.findById(userId).select('-password');
     if (!user) {
         throw new ApiError(404, "User not found")
@@ -244,9 +253,9 @@ export const setProfile = async(req, res) => {
         throw new ApiError(500, "Something went wrong while updating the user.");
     }
 
-    return res.status(201).json(
-        new ApiResponse(200, updatedUser, "User profile updated successfully")
-    )
+    return res
+    .status(200)
+    .redirect('/preferences')
 
 }
 
@@ -494,7 +503,7 @@ export const logoutUser = async(req, res) => {
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .redirect('/index')
+    .redirect('/')
 };
 
 

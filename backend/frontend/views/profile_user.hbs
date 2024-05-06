@@ -1,72 +1,88 @@
-<form id="profile-edit-form">
-  <h2>User Details</h2>
+  <form id="profile-edit-form" action="/api/v1/users/profile" method="POST">
+    <h2>User Details</h2>
+    <div class="exp-img">
+      <img src="{{user.profile_picture}}" alt="" class="exp-pro-img">
+    </div>
     <div class="form-group">
-    <label for="username">Username:</label>
-    <textarea id="username" name="username">{{username}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="email">Email:</label>
-    <textarea id="email" name="email">{{email}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="food_choices">Food Choices:</label>
-    <textarea id="food_choices" name="food_choices">{{food_choices}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="firstName">First Name: </label>
-    <textarea id="firstName" name="firstName">{{firstName}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="lastName">Last Name:</label>
-    <textarea id="lastName" name="lastName">{{lastName}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="bio">Bio:</label>
-    <input id="bio" name="bio" value="{{bio}}">
-  </div>
-  <div class="form-group">
-    <label for="age">Age:</label>
-    <input id="age" name="age" value="{{age}}">
-  </div>
-  <div class="form-group">
-    <label for="profile_picture">Profile Picture:</label>
-    <input type="file" id="profile_picture" name="profile_picture">
-  </div>
+      <label for="username">Username:</label>
+      <textarea id="username" name="username">{{user.username}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="email">Email:</label>
+      <textarea id="email" name="email">{{user.email}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="food_choices">Food Choices:</label>
+      <textarea id="food_choices" name="food_choices">{{user.food_choices}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="firstName">First Name: </label>
+      <textarea id="firstName" name="firstName">{{user.firstName}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="lastName">Last Name:</label>
+      <textarea id="lastName" name="lastName">{{user.lastName}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="bio">Bio:</label>
+      <input id="bio" name="bio" value="{{user.bio}}">
+    </div>
+    <div class="form-group">
+      <label for="age">Age:</label>
+      <input id="age" name="age" value="{{user.age}}">
+    </div>
+    <div class="form-group">
+      <label for="profile_picture">Select Profile Picture to change:</label>
+      <input type="file" id="profile_picture" name="profile_picture" value="{{user.profile_picture}}">
+    </div>
 
-  <h2>User Preferences</h2>
+    <h2>User Preferences</h2>
     <div class="form-group">
-    <label for="looking_forBHK">Looking For Number of BHK:</label>
-    <textarea id="looking_forBHK" name="looking_forBHK">{{looking_forBHK}}</textarea>
-  </div>
+      <label for="looking_forBHK">Looking For Number of BHK:</label>
+      <textarea id="looking_forBHK" name="looking_forBHK">{{user.preferences.looking_forBHK}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="zipcode">Zipcode:</label>
+      <textarea id="zipcode" name="zipcode">{{user.preferences.zipcode}}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="food_choices">Food Choices:</label>
+      <input type="radio" id="vegetarian" name="food_choices" value="vegetarian" {{#if (eq user.preferences.food_choices 'vegetarian')}} checked {{/if}}>
+      <label for="vegetarian">Vegetarian</label>
+      <input type="radio" id="non-vegetarian" name="food_choices" value="non-vegetarian" {{#if (eq user.preferences.food_choices 'non-vegetarian')}} checked {{/if}}>
+      <label for="non-vegetarian">Non-Vegetarian</label>
+    </div>
+    <div class="form-group">
+      <label for="profession">Profession:</label>
+      <input type="radio" id="student" name="profession" value="student" {{#if (eq user.preferences.profession 'student')}} checked {{/if}}>
+      <label for="student">Student</label>
+      <input type="radio" id="working" name="profession" value="working" {{#if (eq user.preferences.profession 'working')}} checked {{/if}}>
+      <label for="working">Working</label>
+    </div>
   <div class="form-group">
-    <label for="zipcode">Zipcode:</label>
-    <textarea id="zipcode" name="zipcode">{{zipcode}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="food_choices">Food Choices:</label>
-    <textarea id="food_choices" name="food_choices">{{food_choices}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="profession">Profession:</label>
-    <textarea id="profession" name="profession">{{profession}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="ages_between">Ages between:</label>
-    <textarea id="ages_between" name="ages_between">{{ages_between}}</textarea>
-  </div>
-  <div class="form-group">
-    <label for="budget">Budget:</label>
-    <input type="number" id="budget" name="budget" value="{{budget}}">
+    <label for="age-range">Age Range:</label>
+    <input type="number" id="min-age" name="ages_between[0]" placeholder="Min Age" value="{{#if user.preferences.ages_between}}{{get user.preferences.ages_between 0}}{{/if}}">
+    <input type="number" id="max-age" name="ages_between[1]" placeholder="Max Age" value="{{#if user.preferences.ages_between}}{{get user.preferences.ages_between 1}}{{/if}}">
   </div>
   <div class="form-group">
     <label for="lifestyle_preferences">Lifestyle Preferences:</label>
-    <input  id="lifestyle_preferences" name="lifestyle_preferences" value="{{lifestyle_preferences}}">
+    <input type="checkbox" id="Drinking" name="lifestyle_preferences" value="Drinking" {{#if (includes user.preferences.lifestyle_preferences 'Drinking')}}checked{{/if}}>
+    <label for="Drinking">Drinking</label>
+    <input type="checkbox" id="Smoking" name="lifestyle_preferences" value="Smoking" {{#if (includes user.preferences.lifestyle_preferences 'Smoking')}}checked{{/if}}>
+    <label for="Smoking">Smoking</label>
+    <input type="checkbox" id="Pets" name="lifestyle_preferences" value="Pets" {{#if (includes user.preferences.lifestyle_preferences 'Pets')}}checked{{/if}}>
+    <label for="Pets">Pets</label>
+    <input type="checkbox" id="Cleanliness" name="lifestyle_preferences" value="Cleanliness" {{#if (includes user.preferences.lifestyle_preferences 'Cleanliness')}}checked{{/if}}>
+    <label for="Cleanliness">Cleanliness</label>
   </div>
-  <div class="form-group">
-    <label for="looking_for_accommodation">Looking for Accommodation:</label>
-    <input  id="looking_for_accommodation" name="looking_for_accommodation" value="{{looking_for_accommodation}}">
-  </div>
-
-  <button type="submit" class="btn">Update</button>
-  <button type="button" id="cancel-btn" class="btn">Cancel</button>
-</form>
+    <div class="form-group">
+      <label for="budget">Budget:</label>
+      <input type="number" id="budget" name="budget" value="{{user.preferences.budget}}">
+    </div>
+      {{!-- <div class="form-group">
+        <label for="looking_for_accommodation">Looking for Accommodation:</label>
+        <input  id="looking_for_accommodation" name="looking_for_accommodation" value="{{user.preferences.looking_for_accommodation}}">
+      </div> --}}
+    <button type="submit" class="btn">Update</button>
+    <button type="button" id="cancel-btn" class="btn">Cancel</button>
+  </form>

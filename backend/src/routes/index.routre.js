@@ -3,6 +3,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { exploreController } from "../controllers/explore.controller.js";
 import { matchedController } from "../controllers/match.controller.js";
 import { checkPreferences } from "../middlewares/pref.middleware.js";
+import { logoutUser } from "../controllers/user.controller.js";
 import { preferenceController, showPreferencesForm, setPreferences } from "../controllers/preference.controller.js";
 
 
@@ -20,6 +21,10 @@ router
     })
 
 router
+    .route("/logout")
+    .get(verifyJWT, logoutUser)
+
+router
     .route('/register')
     .get((req, res) => {
         res.render('register', {isAuthenticated : req.user ? true : false });
@@ -28,6 +33,13 @@ router
 router
     .route('/showMatchedUsers')
     .get(verifyJWT, matchedController)
+
+router
+.route("/profile")
+.get(verifyJWT, (req, res) => {
+    console.log(req.user);
+    res.render('profile_user', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
+})
 
 router
     .route('/explore')

@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from "cookie-parser"
 import { createServer } from "http"
 import { engine } from 'express-handlebars';
+import exphbs from 'express-handlebars';
 // import { Server } from "socket.io";
 import fs from 'fs';
 import path from 'path';
@@ -30,6 +31,19 @@ app.use(express.urlencoded(
         limit : "16kb"
     }
 ));
+
+const helpers = exphbs.create({
+      eq: function(arg1, arg2) {
+        return arg1 === arg2;
+      },
+      includes: function(array, value) {
+        return (array && array.includes(value)) ? true : false;
+      },
+      get: function(array, index) {
+        return array[index];
+    }
+  });
+
 //app.use('/frontend/public', express.static('frontend/public'));
 
 app.use(express.static(path.dirname(fileURLToPath(import.meta.url)) + '/../frontend/public'));
@@ -37,13 +51,17 @@ app.use(express.static(path.dirname(fileURLToPath(import.meta.url)) + '/../front
 app.use(cookieParser());
 
 
-app.engine('hbs', engine({
-    extname: 'hbs',
-    defaultLayout: 'main',
-    layoutsDir: './frontend/views/layouts/',
-    partialsDir: './frontend/views/partials/',
-    // protectedStrictMode: false
-  }));
+// Create Handlebars engine with helpers
+const hbs = exphbs.create({
+  extname: '.hbs',
+  defaultLayout: 'main',
+  layoutsDir: './frontend/views/layouts/',
+  partialsDir: './frontend/views/partials/',
+  helpers: helpers
+});
+
+// Set Handlebars engine
+app.engine('hbs', hbs.engine);
 
 // console.log('Views directory:', app.get('views'));
 
