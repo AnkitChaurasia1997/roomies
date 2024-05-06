@@ -11,7 +11,7 @@ import { routeCheck } from "../middlewares/authRoute.middleware.js";
 const router  = Router();
 router
     .route('/')
-    .get((req, res) => {
+    .get(routeCheck, (req, res) => {
         res.render('index'), {isAuthenticated : req.user ? true : false };
     })
 

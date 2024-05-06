@@ -11,11 +11,17 @@ export const routeCheck = async(req, res, next) => {
             return res.redirect('/login');
         }
 
+        if(token && req.originalUrl === '/') {
+            return res.redirect('/explore');
+        }
+
         if(req.originalUrl === '/login'){
             if(token){
                 return res.redirect('/explore');
             }
         }
+
+
         next();
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid access token");
