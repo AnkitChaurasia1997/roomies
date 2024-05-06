@@ -120,3 +120,13 @@ const context = { messages: chatData };
 const html = template(context);
 document.getElementById("chat-messages").innerHTML = html;
 
+/*add member button on profile_group*/
+
+function toggleMemberFields(member) {
+    var memberFields = document.getElementById(member + "-fields");
+    if (memberFields.style.display === "none" || memberFields.style.display === "") {
+      memberFields.style.display = "block";
+    } else {
+      memberFields.style.display = "none";
+    }
+}
