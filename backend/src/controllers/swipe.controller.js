@@ -1,3 +1,4 @@
+import { Group } from "../models/group.model.js";
 import { Match } from "../models/match.model.js";
 import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -17,19 +18,26 @@ const checkIfLiked = async (like, likedby) => {
 export const matchingLogic = async(req, res) => {
     try {
         const { like, likedby } = req.body;
-        console.log(req.body);
+        // console.log(req.body);
 
         const user1 = await User.findById(likedby);
-        console.log(user1);
+        // console.log(user1);
         //the logic if the other guy has already the guy who swiped right
         // if ankit has already liked Ritik -- > then match;
         const isLiked = await checkIfLiked(like, likedby);
 
         if (isLiked){
-            await Promise.all([
-                User.findByIdAndUpdate(likedby, { $push: { matches: like } }),
-                User.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } }),
-              ]);
+            if(!req.user.members){
+                await Promise.all([
+                    User.findByIdAndUpdate(likedby, { $push: { matches: like } }),
+                    User.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } }),
+                  ]);
+            }else{
+                await Promise.all([
+                    Group.findByIdAndUpdate(likedby, { $push: { matches: like } }),
+                    Group.findByIdAndUpdate(like, { $push: { matches: likedby }, $pull: { likes: likedby } }),
+                  ]);
+            }
             return res.status(200).json(
                 new ApiResponse(
                 200,
@@ -50,7 +58,12 @@ export const matchingLogic = async(req, res) => {
             return res.status(500).send("something went wrong");
         }
 
-        await User.findByIdAndUpdate(likedby, { $push: { likes: like } });
+        if(!req.user.members){
+            await User.findByIdAndUpdate(likedby, { $push: { likes: like } });
+        }else{
+            await Group.findByIdAndUpdate(likedby, { $push: { likes: like } });
+        }
+
 
         return res.status(200).json(
             new ApiResponse(
@@ -75,7 +88,11 @@ export const rejectionLogic = async(req, res) => {
         const reject = like;
         const rejectedby = likedby;
 
-        await User.findByIdAndUpdate(rejectedby, { $push: { rejects: reject } });
+        if(!req.user.members){
+            await User.findByIdAndUpdate(rejectedby, { $push: { rejects: reject } });
+        }else{
+            await Group.findByIdAndUpdate(rejectedby, { $push: { rejects: reject } });
+        }
 
         return res.status(200).json(
             new ApiResponse(

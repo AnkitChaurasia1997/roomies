@@ -15,6 +15,12 @@
         <input type="file" id="profile_picture" name="profile_picture" accept="image/*" required>
         <button type="submit" class="btn">Register</button>
       </form>
+      <p id="for_error" class="para p1"></p>
+      {{#if error}}
+      <p id="error-list" class="errorpara p1">{{this.error}}</p>
+      {{/if}}
       <p>Already have an account? <a href="/login">Login here</a></p>
     </div>
   </div>
+  
+  <script src="/js/register_user.js"></script>
