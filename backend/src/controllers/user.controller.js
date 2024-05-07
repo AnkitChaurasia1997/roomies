@@ -104,7 +104,7 @@ try {
     );
 
     if(!createdUser){
-        throw new ApiError(500, "Something went wrong while registering the user.");
+        return res.status(400).render('register_user',{error:"Something went wrong while registering the user.", username:userDetails.username, email:userDetails.email, firstName:userDetails.firstName, lastName:userDetails.lastName, bio:userDetails.bio, age:userDetails.age});
     }
 
     res.redirect('/api/v1/users/login');
@@ -475,7 +475,7 @@ export const loginUser = async(req, res) => {
         const user = await User.findOne({username});
 
         if(!user){
-            return res.status(400).render('login_user',{error:"User does not exist"});
+            return res.status(400).render('login_user',{error:"Invalid Username or Password"});
 
         }
 
@@ -483,7 +483,7 @@ export const loginUser = async(req, res) => {
         const isPasswordValid = await user.isPasswordCorrect(password);
 
         if(!isPasswordValid){
-            return res.status(400).render('login_user',{error:"Invalid Credentials"});
+            return res.status(400).render('login_user',{error:"Invalid Username or Password"});
         }
 
         const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
