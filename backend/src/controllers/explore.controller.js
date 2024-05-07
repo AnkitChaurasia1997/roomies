@@ -40,6 +40,7 @@ export const shuffleProfiles = async (profiles, username, currentUserId) => {
   
 export const exploreController = async (req, res) => {
   try {
+    console.log(req.user);
     let profiles;
     if (!req.user.members) {
       const users = await User.find().select("-password -refreshToken").lean();

@@ -2,12 +2,13 @@ import { Router } from "express";
 import { loginUser, logoutUser, registerUser, getProfile, setProfile, getNewRefreshToken, getProfilesForUser, getfilteredUsersList, getUserStatus } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { alreadyLoggedIn, ifLoginThenGo } from "../middlewares/authRoute.middleware.js";
 
 const router = Router();
 
 router
     .route("/register")
-    .get(async (req, res) => {
+    .get(alreadyLoggedIn, async (req, res) => {
         res.render('register_user');
     })
     .post(upload.fields([
@@ -20,7 +21,7 @@ router
 
 router
     .route("/login")
-    .get((req, res) => {
+    .get(alreadyLoggedIn, (req, res) => {
         res.render('login_user', {isAuthenticated : req.user ? true : false });
     })
     .post(loginUser)
@@ -29,7 +30,7 @@ router
 
 router
     .route("/logout")
-    .post(verifyJWT, logoutUser)
+    .post(ifLoginThenGo, verifyJWT, logoutUser)
 
 
 router
@@ -39,7 +40,7 @@ router
 
 router
 .route("/profile")
-.post(verifyJWT, setProfile)
+.post(ifLoginThenGo, verifyJWT, setProfile)
 
 // router
 //     .route("/profile/:userId")
@@ -59,7 +60,7 @@ router
 
 router
     .route("/profiles/get/:userId")
-    .get(getProfilesForUser)
+    .get(ifLoginThenGo, getProfilesForUser)
 
 router
     .route("/filter/:userId")

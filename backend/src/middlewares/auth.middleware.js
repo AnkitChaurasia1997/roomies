@@ -19,7 +19,7 @@ export const verifyJWT = async(req, res, next) => {
          || await Group.findById(decodedToken?._id).select("-password -refreshToken -likes").lean();
     
         if(!user){
-    
+            return res.redirect('/');
             throw new ApiError(401, "Invalid Access Token");
         }
         

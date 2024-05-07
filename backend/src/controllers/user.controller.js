@@ -514,17 +514,31 @@ export const loginUser = async(req, res) => {
 
 
 export const logoutUser = async(req, res) => {
-    await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set : {
-                refreshToken : undefined
+    if(!req.user.members){
+        await User.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set : {
+                    refreshToken : undefined
+                }
+            },
+            {
+                new : true
             }
-        },
-        {
-            new : true
-        }
-    )
+        )
+    }else{
+        await Group.findByIdAndUpdate(
+            req.user._id,
+            {
+                $set : {
+                    refreshToken : undefined
+                }
+            },
+            {
+                new : true
+            }
+        )
+    }
 
     const options = {
         httpOnly : true,

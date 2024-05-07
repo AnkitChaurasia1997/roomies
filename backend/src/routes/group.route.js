@@ -2,12 +2,13 @@ import { Router } from "express";
 import { registerGroup, setProfile, getProfile, loginUser, logoutUser, deleteGroup } from "../controllers/group.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { alreadyLoggedIn, ifLoginThenGo } from "../middlewares/authRoute.middleware.js";
 
 const router = Router();
 
 router
     .route("/register")
-    .get(async (req, res) => {
+    .get(alreadyLoggedIn, async (req, res) => {
         res.render('register_group', {isAuthenticated : req.user ? true : false });
     })
     .post(upload.fields([
@@ -20,7 +21,7 @@ router
 
 router
     .route("/login")
-    .get(async (req, res) => {
+    .get(alreadyLoggedIn, async (req, res) => {
         res.render('login_group', {isAuthenticated : req.user ? true : false });
     })
     .post(loginUser)
@@ -29,7 +30,7 @@ router
 
 router
     .route("/logout")
-    .post(verifyJWT, logoutUser)
+    .post(ifLoginThenGo,verifyJWT, logoutUser)
 
 
 // router
@@ -40,15 +41,15 @@ router
 
 router
     .route("/profile/:userId")
-    .post(setProfile)
+    .post(ifLoginThenGo, setProfile)
 
 router
     .route("/profile/:userId")
-    .get(getProfile)
+    .get(ifLoginThenGo, getProfile)
 
 router
     .route('/delete')
-    .get(verifyJWT, deleteGroup);
+    .get(ifLoginThenGo, verifyJWT, deleteGroup);
 
 // router
 //     .route("/swipeRight")

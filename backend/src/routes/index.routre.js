@@ -5,40 +5,40 @@ import { matchedController } from "../controllers/match.controller.js";
 import { checkPreferences } from "../middlewares/pref.middleware.js";
 import { logoutUser } from "../controllers/user.controller.js";
 import { preferenceController, showPreferencesForm, setPreferences } from "../controllers/preference.controller.js";
-import { routeCheck } from "../middlewares/authRoute.middleware.js";
+import { alreadyLoggedIn, ifLoginThenGo, routeCheck } from "../middlewares/authRoute.middleware.js";
 import { viewProfilePage } from "../controllers/profile.controller.js";
 
 
 const router  = Router();
 router
     .route('/')
-    .get(routeCheck, (req, res) => {
+    .get(alreadyLoggedIn, (req, res) => {
         res.render('index'), {isAuthenticated : req.user ? true : false };
     })
 
 router
     .route('/login')
-    .get(routeCheck, (req, res) => {
+    .get(alreadyLoggedIn, (req, res) => {
         res.render('login_selector', {isAuthenticated : req.user ? true : false });
     })
 
 router
     .route("/logout")
-    .get(verifyJWT, logoutUser)
+    .get(ifLoginThenGo, verifyJWT, logoutUser)
 
 router
     .route('/register')
-    .get((req, res) => {
+    .get(alreadyLoggedIn, (req, res) => {
         res.render('register', {isAuthenticated : req.user ? true : false });
     })
 
 router
     .route('/showMatchedUsers')
-    .get(verifyJWT, matchedController)
+    .get(ifLoginThenGo, verifyJWT, matchedController)
 
 router
 .route("/profile")
-.get(verifyJWT, (req, res) => {
+.get(ifLoginThenGo ,verifyJWT, (req, res) => {
     console.log(req.user);
     if(req.user && req.user.name) {
         res.render('profile_group', {title : "Profile" , user : req.user || {}, isAuthenticated : req.user ? true : false });
@@ -49,22 +49,26 @@ router
 
 router
     .route('/explore')
-    .get(routeCheck, verifyJWT ,exploreController);
+    .get(ifLoginThenGo ,verifyJWT, exploreController);
 
 router
     .route('/profile/:userID')
-    .get(routeCheck, verifyJWT ,viewProfilePage);
+    .get(ifLoginThenGo, verifyJWT ,viewProfilePage);
 
 
 router
     .route('/setPreferences')
-    .get(verifyJWT, showPreferencesForm)
-    .post(verifyJWT, setPreferences);
+    .get(ifLoginThenGo, verifyJWT, showPreferencesForm)
+    .post(ifLoginThenGo, verifyJWT, setPreferences);
 
 
 router
     .route('/preferences')
-    .get(verifyJWT,checkPreferences, preferenceController);
+    .get(ifLoginThenGo, verifyJWT,checkPreferences, preferenceController);
 
 
 export default router;
+
+
+
+
