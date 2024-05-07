@@ -56,7 +56,8 @@ function extractPreferences(preferences) {
 
 
 export const showPreferencesForm = async(req, res) => {
-    return res.render('setPreferencesFirst', {layout : 'main'})
+    return res.render('setPreferencesFirst', { layout : 'main' , isAuthenticated : req.user ? true : false});
+
 }
 
 
