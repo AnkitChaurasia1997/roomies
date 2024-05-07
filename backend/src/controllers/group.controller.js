@@ -618,4 +618,17 @@ export const logoutUser = async(req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {} , "User logged out successfully"));
 
-};
+}
+
+export const deleteGroup = async(req, res) => {
+    let name = req.user.name ? req.user.name : '';
+    if(name) {
+        await Group.deleteOne({name}).then(res => {
+            res.redirect('/login');
+        }).catch( error => {
+            throw new ApiError(500, "Internal Server Error")
+        });
+
+    }
+    
+}

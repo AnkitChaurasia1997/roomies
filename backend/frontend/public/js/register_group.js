@@ -22,7 +22,7 @@ function validateRegisterForm(event) {
     var profilePicture = document.getElementById("profile_picture").value.trim();
     $('#for_error').hide();
     $('#error-list').hide();
-    if (!username || !password || !confirmPassword || !email || !bio || !age || !profilePicture) {
+    if (!username || !password || !confirmPassword || !email || !bio || !profilePicture) {
         displayError('All fields are required','for_error');
         return;
     }
