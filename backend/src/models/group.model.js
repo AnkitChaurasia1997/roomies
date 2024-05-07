@@ -36,7 +36,10 @@ const preferencesSchema = new mongoose.Schema({
         type : Boolean,
         default : true,
         required : [true, "Can't be empty"]
-    }
+    },
+    budget : {
+        type : Number
+    },
 })
 
 const membersSchema = new mongoose.Schema({
@@ -44,10 +47,24 @@ const membersSchema = new mongoose.Schema({
         type : String,
         required : [true, "first name can't be empty!"],
         index : true,
+        match: /^[a-zA-Z]{2,25}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z]+$/.test(value); // No numbers
+            },
+            message: 'Invalid first name (2-25 characters, no numbers)'
+        }
     },
     lastName : {
         type : String,
-        required : [true, "last name can't be empty!"]
+        required : [true, "last name can't be empty!"],
+        match: /^[a-zA-Z]{2,25}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z]+$/.test(value); // No numbers
+            },
+            message: 'Invalid last name (2-25 characters, no numbers)'
+        }
     },
     age:{
         type: Number,
@@ -59,7 +76,14 @@ const membersSchema = new mongoose.Schema({
     email : {
         type : String,
         required : [true, "email can't be empty!"],
-        trim : true
+        trim : true,
+        match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+            },
+            message: 'Invalid email address'
+        }
     },
     gender : {
         type : String,
@@ -76,30 +100,53 @@ const groupSchema = new mongoose.Schema({
         lowercase : true,
         trim : true,
         index : true,
-        lowercase : true
+        match: /^[a-zA-Z]{5,10}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z]+$/.test(value); // No numbers
+            },
+            message: 'Invalid username (5-10 characters, no numbers)'
+        }
     },
     email : {
         type : String,
         required : [true, "Email is required!"],
         unique : true,
         trim : true,
+        match: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        validate: {
+            validator: function(value) {
+                return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+            },
+            message: 'Invalid email address'
+        }
     },
     password : {
         type : String,
-        required : [true, 'Password is required']
+        required : [true, 'Password is required'],
+        validate: {
+            validator: function(value) {
+                return /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/.test(value);
+            },
+            message: 'Invalid password (at least 8 characters with uppercase, number, special character)'
+        }
     },
     profile_picture : {
         type: String,
         required : [true, "Profile picture is required"],
     },
     bio : {
-        type : String
+        type : String,
+        maxlength: 500,
+        validate: {
+            validator: function(value) {
+                return value.length <= 500;
+            },
+            message: 'Bio cannot exceed 500 characters'
+        }
     },
     members : {
         type : [membersSchema]
-    },
-    budget : {
-        type : Number
     },
     preferences : {
         type : preferencesSchema,

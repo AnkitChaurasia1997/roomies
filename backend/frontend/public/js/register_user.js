@@ -111,7 +111,7 @@ function validateLoginForm(event) {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     $('#for_error1').hide();
-    $('#error-list').hide();
+    $('#error-list1').hide();
     if (!username || !password) {
         displayError('All fields are required', 'for_error1');
         return;
