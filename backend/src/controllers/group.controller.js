@@ -546,7 +546,8 @@ export const loginUser = async(req, res) => {
 
     try{
 
-        console.log(req);
+        // console.log(req);
+        console.log("first");
         const { name, password } = req.body;
 
         if(!name){
@@ -581,7 +582,7 @@ export const loginUser = async(req, res) => {
                 httpOnly : true,
                 secure : true
             }
-
+            
             return res
             .status(200)
             .cookie("accessToken", accessToken, options)
@@ -621,14 +622,15 @@ export const logoutUser = async(req, res) => {
 }
 
 export const deleteGroup = async(req, res) => {
-    let name = req.user.name ? req.user.name : '';
-    if(name) {
-        await Group.deleteOne({name}).then(res => {
-            res.redirect('/login');
-        }).catch( error => {
-            throw new ApiError(500, "Internal Server Error")
-        });
-
+    await Group.deleteOne({ name: req.user.name }); 
+    const options = {
+        httpOnly : true,
+        secure : true
     }
-    
-}
+    console.log("deleted");
+    return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)// assuming name is a route parameter
+    .redirect('/login');
+  }
