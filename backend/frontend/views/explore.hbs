@@ -22,15 +22,12 @@
 <script>
 
 function moreInfo(element) {
-        const userID = element.closest('.exp-pro-card').dataset.userId;
-        console.log(`Clicked on user with ID: ${userID}`);
-        
-        // Make a GET request to the API endpoint
-        fetch(`/api/v1/users/profilePage?userID=${userID}`)
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error(error));
+  const userID = element.closest('.exp-pro-card').dataset.userId;
+  console.log(`Clicked on user with ID: ${userID}`);
+  // Redirect to the "More Info" page
+  window.location.href = `/profile/${userID}`;
 }
+
 
 
 function sendResponse(response, element) {
