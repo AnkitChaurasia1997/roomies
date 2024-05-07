@@ -56,7 +56,7 @@ export const exploreController = async (req, res) => {
     const username = req.user.username || req.user.name;
     const filteredProfiles = await shuffleProfiles(profiles, username, req.user._id);
     // console.log(filteredProfiles.length);
-    return res.render('explore', { profiles: filteredProfiles, userID: req.user._id , isAuthenticated : req.user ? true : false});
+    return res.render('explore', { profiles: filteredProfiles, userID: req.user._id , isAuthenticated : req.user ? true : false,layout : 'main' });
   } catch (error) {
     console.error(error);
     return res.status(500).send('Error occurred while fetching profiles');

@@ -17,7 +17,6 @@ function validateRegisterForm(event) {
     var username = document.getElementById("name").value.trim();
     var email = document.getElementById("email").value.trim();
     var bio = document.getElementById("bio").value.trim();
-    var age = document.getElementById("age").value.trim();
     var password = document.getElementById("password").value;
     var confirmPassword = document.getElementById("confirmPassword").value;
     var profilePicture = document.getElementById("profile_picture").value.trim();
@@ -46,19 +45,8 @@ function validateRegisterForm(event) {
     }
 
 
-     // Check if age is a number
-     if (isNaN(age)) {
-        displayError("Age must be a number!",'for_error');
-        document.getElementById("age").focus();
-        return;
-    }
 
-    // Check if age is greater than 18 and less than 90
-    if (age <= 18 || age >= 90) {
-        displayError("Age must be greater than 18 and less than 90!",'for_error');
-        document.getElementById("age").focus();
-        return;
-    }
+
 
     if (!/(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}/.test(password)) {
         displayError('Invalid password (at least 8 characters with uppercase, number, special character)','for_error');
