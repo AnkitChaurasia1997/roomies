@@ -6,6 +6,7 @@ import { checkPreferences } from "../middlewares/pref.middleware.js";
 import { logoutUser } from "../controllers/user.controller.js";
 import { preferenceController, showPreferencesForm, setPreferences } from "../controllers/preference.controller.js";
 import { routeCheck } from "../middlewares/authRoute.middleware.js";
+import { viewProfilePage } from "../controllers/profile.controller.js";
 
 
 const router  = Router();
@@ -49,6 +50,10 @@ router
 router
     .route('/explore')
     .get(routeCheck, verifyJWT ,exploreController);
+
+router
+    .route('/profile/:userID')
+    .get(routeCheck, verifyJWT ,viewProfilePage);
 
 
 router

@@ -1,29 +1,25 @@
 <div class="profile-data">
-  <img src="{{profile_pic}}" alt="Profile Picture">
-  <h2>User Detailes</h2>
-  <div class="details">
-    <p><strong>Username:</strong>{{username}}</p>
-    <p><strong>Email:</strong> {{email}}</p>
-    <p><strong>First Name:</strong>{{firstname}}</p>
-    <p><strong>Last Name:</strong>{{lastname}}</p>
-    <p><strong>Bio:</strong> {{bio}}</p>
-    <p><strong>Age:</strong> {{age}}</p>
-    <p><strong>Budget:</strong> {{budget}}</p>
-    <p><strong>Gender:</strong> {{gender}}</p>
-    <p><strong>Location:</strong> {{location}}</p>
-    <p><strong>Food Choice:</strong> {{food_choice}}</p>
-    <p><strong>Profession:</strong> {{profession}}</p>
-  </div>
+   {{log profile}}
+    <img src="{{profile.profile_picture}}" alt="Profile Picture">
+    <h2>User Details</h2>
+    <div class="details">
+      <p><strong>Username:</strong>{{profile.username}}</p>
+      <p><strong>Email:</strong> {{profile.email}}</p>
+      <p><strong>Name:</strong>{{profile.firstName}} {{profile.lastName}}</p>
+      <p><strong>Bio:</strong> {{profile.bio}}</p>
+      <p><strong>Age:</strong> {{profile.age}}</p>
+    </div>
 
-  <h2>User Preferences</h2>
-  <div class="preferences">
-    <p><strong>Looking for Number of BHK:</strong> {{looking_forBHK}}</p>
-    <p><strong>Zipcode:</strong> {{zipcode}}</p>
-    <p><strong>Food Choices:</strong> {{food_choice}}</p>
-    <p><strong>Profession:</strong> {{profession}}</p>
-    <p><strong>Ages Between:</strong> {{ages_between}}</p>
-    <p><strong>Budget:</strong> {{budget}}</p>
-    <p><strong>Lifestyle Preferences:</strong> {{lifestyle_preferences}}</p>
-    <p><strong>Looking for Accommodation:</strong> {{looking_for_accommodation}}</p>
-  </div>
+    <h2>User Preferences</h2>
+    <div class="preferences">
+      {{log profile.preferences}}
+      {{#if profile.preferences.looking_forBHK}}<p><strong>Looking for Number of BHK:</strong> {{profile.preferences.looking_forBHK}}</p>{{/if}}
+      {{#if profile.preferences.zipcode}}<p><strong>Zipcode:</strong> {{profile.preferences.zipcode}}</p>{{/if}}
+      {{#if profile.preferences.food_choices}}<p><strong>Food Choices:</strong> {{profile.preferences.food_choices}}</p>{{/if}}
+      {{#if profile.preferences.profession}}<p><strong>Profession:</strong> {{profile.preferences.profession}}</p>{{/if}}
+      {{#unless profile.preferences.ages_between.length}}<p><strong>Age Range:</strong> No preferences</p>{{else}}<p><strong>Age Range:</strong> {{profile.preferences.ages_between}}</p>{{/unless}}
+      {{#if profile.preferences.budget}}<p><strong>Budget:</strong> {{profile.preferences.budget}}</p>{{/if}}
+      {{#unless profile.preferences.lifestyle_preferences.length}}<p><strong>Lifestyle Preferences:</strong> No preferences</p>{{else}}<p><strong>Lifestyle Preferences:</strong> {{profile.preferences.lifestyle_preferences}}</p>{{/unless}}
+      <p><strong>Looking for Accommodation:</strong> {{profile.preferences.looking_for_accommodation}}</p>
+    </div>
 </div>
