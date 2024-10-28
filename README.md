@@ -22,7 +22,7 @@
 To get started with Roomies, clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/yourusername/roomies.git
+git clone https://github.com/AnkitChaurasia1997/roomies.git
 cd roomies
 npm install
 ```
